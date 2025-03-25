@@ -1,0 +1,2 @@
+Question: If you create a constructor method to build a DVD by title then create a constructor method to build  a DVD by category. Does JAVA allow you to do this? 
+- Java sẽ không cho phép hai constructor này cùng tồn tại trong một lớp vì chúng có cùng tên kiểu dữ liệu và số lượng của tham số, như vậy Java sẽ không hiểu nên sử dụng constructor nào khi được gọi
