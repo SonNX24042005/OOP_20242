@@ -3,5 +3,14 @@ Question: If you create a constructor method to build a DVD by title then create
 Question: Is JAVA a Pass by Value or a Pass by Reference programming language?  
 - Java là Pass by Value. 
 - Vì pass by value là khi truyền một biến vào phương thức, Java sẽ truyền bản sao của giá trị của biến đó nên mọi thay đổi bên trong phương thức sẽ không ảnh hưởng đến biến gốc bên ngoài. 
-- Còn pass by reference là khi tham số truyền vào sẽ là tham chiếu trực tiếp đến biến gốc, nên bất kỳ thay đổi nào trong phương thức đều ảnh hưởng trực tiếp đến biến bên ngoài. 
+Còn pass by reference là khi tham số truyền vào sẽ là tham chiếu trực tiếp đến biến gốc, nên bất kỳ thay đổi nào trong phương thức đều ảnh hưởng trực tiếp đến biến bên ngoài. 
 => Nên Java không hoạt động theo cách này.
+Question:  
+● After the call of swap(jungleDVD, cinderellaDVD) why does the title of these two objects still remain? 
+- Vì trong trong Java, các tham số được truyền theo cơ chế pass-by-value. Điều này có nghĩa là các tham chiếu của jungleDVD và cinderellaDVD được sao chép và truyền vào hàm swap.
+Nên việc hoán đổi chỉ thay đổi các bản sao của tham chiếu, chứ không thay đổi tham chiếu gốc trong main nên tiêu đề của hai đối tượng này vẫn giữ nguyên sau khi ra khỏi hàm swap.
+● After the call of changeTitle(jungleDVD, cinderellaDVD.getTitle()) why is the title of the JungleDVD changed? 
+- Sau khi gọi hàm changeTitle(jungleDVD, cinderellaDVD.getTitle()), tiêu đề của jungleDVD thay đổi vì trong Java, khi truyền tham số là đối tượng, tham chiếu của đối tượng được sao chép và truyền vào hàm. 
+Trong hàm changeTitle, lệnh dvd.setTitle(title) thay đổi trực tiếp thuộc tính title của đối tượng mà dvd trỏ đến, tức là jungleDVD. 
+Mặc dù sau đó có lệnh dvd = new DigitalVideoDisc(oldTitle) tạo đối tượng mới và thay đổi tham chiếu cục bộ, nhưng việc này không ảnh hưởng đến jungleDVD ban đầu trong hàm main. 
+=> Vì vậy, thay đổi tiêu đề trong lệnh setTitle được duy trì khi hàm kết thúc.
