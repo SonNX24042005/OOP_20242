@@ -1,0 +1,26 @@
+package hust.soict.hedspi.aims.media;
+
+import java.util.Comparator;
+
+public class MediaComparatorByCostTitle implements Comparator<Media> {
+
+    @Override
+    public int compare(Media m1, Media m2) {
+        // Ưu tiên 1: So sánh theo Cost (giảm dần)
+        int costComparison = Float.compare(m2.getCost(), m1.getCost()); // So sánh ngược
+
+        if (costComparison != 0) {
+            // Nếu cost khác nhau, trả về kết quả so sánh cost
+            return costComparison;
+        } else {
+            // Nếu cost giống nhau, Ưu tiên 2: So sánh theo Title (thứ tự từ điển A-Z)
+            return m1.getTitle().compareToIgnoreCase(m2.getTitle()); // Không phân biệt hoa thường
+        }
+
+         /* Cách viết ngắn gọn hơn sử dụng Comparator chaining (tùy chọn)
+        return Comparator.comparing(Media::getCost, Comparator.reverseOrder())
+                         .thenComparing(Media::getTitle, String.CASE_INSENSITIVE_ORDER)
+                         .compare(m1, m2);
+        */
+    }
+}

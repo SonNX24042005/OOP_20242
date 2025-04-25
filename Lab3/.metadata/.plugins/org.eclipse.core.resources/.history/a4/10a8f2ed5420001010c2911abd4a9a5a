@@ -1,0 +1,155 @@
+package hust.soict.hedspi.aims.cart;
+import hust.soict.hedspi.aims.disc.DigitalVideoDisc;
+import java.util.ArrayList; // Sử dụng ArrayList để tìm kiếm dễ dàng hơn
+
+public class Cart {
+    public static final int MAX_NUMBERS_ORDERED = 20;
+    private DigitalVideoDisc itemsOrdered[] = new DigitalVideoDisc[MAX_NUMBERS_ORDERED];
+    private int qtyOrdered = 0;
+
+    // --- Các phương thức addDigitalVideoDisc giữ nguyên ---
+    public void addDigitalVideoDisc(DigitalVideoDisc disc) {
+        if (disc == null) {
+            System.out.println("Lỗi: Không thể thêm đĩa null vào giỏ hàng.");
+            return;
+        }
+        if (qtyOrdered < MAX_NUMBERS_ORDERED) {
+            itemsOrdered[qtyOrdered] = disc;
+            qtyOrdered++;
+            System.out.println("Đĩa '" + disc.getTitle() + "' đã được thêm vào giỏ hàng.");
+            if (qtyOrdered == MAX_NUMBERS_ORDERED) {
+                System.out.println("Cảnh báo: Giỏ hàng đã đầy!");
+            } else if (qtyOrdered >= MAX_NUMBERS_ORDERED - 2) { // Ví dụ cảnh báo khi gần đầy
+                 System.out.println("Cảnh báo: Giỏ hàng gần đầy.");
+            }
+        } else {
+            System.out.println("Lỗi: Giỏ hàng đã đầy, không thể thêm đĩa '" + disc.getTitle() + "'.");
+        }
+    }
+
+    public void addDigitalVideoDisc(DigitalVideoDisc[] dvdList) {
+        if (dvdList == null) return;
+        for (DigitalVideoDisc dvd : dvdList) {
+            addDigitalVideoDisc(dvd); // Gọi lại phương thức add đơn lẻ để có kiểm tra và thông báo
+        }
+    }
+
+    public void addDigitalVideoDisc(DigitalVideoDisc dvd1, DigitalVideoDisc dvd2) {
+        addDigitalVideoDisc(dvd1);
+        addDigitalVideoDisc(dvd2);
+    }
+
+    // --- Phương thức removeDigitalVideoDisc giữ nguyên (nhưng hưởng lợi từ equals/hashCode) ---
+     public void removeDigitalVideoDisc(DigitalVideoDisc disc) {
+        if (disc == null || qtyOrdered == 0) {
+            System.out.println("Không thể xóa đĩa null hoặc giỏ hàng rỗng.");
+            return;
+        }
+        int foundIndex = -1;
+        for (int i = 0; i < qtyOrdered; i++) {
+            // Sử dụng equals để so sánh đối tượng (quan trọng nếu bạn đã ghi đè equals)
+            if (itemsOrdered[i].equals(disc)) {
+                foundIndex = i;
+                break;
+            }
+        }
+
+        if (foundIndex != -1) {
+            // Dịch chuyển các phần tử phía sau về trước
+            for (int j = foundIndex; j < qtyOrdered - 1; j++) {
+                itemsOrdered[j] = itemsOrdered[j + 1];
+            }
+            itemsOrdered[qtyOrdered - 1] = null; // Xóa tham chiếu ở vị trí cuối cùng
+            qtyOrdered--;
+            System.out.println("Đĩa '" + disc.getTitle() + "' đã được xóa khỏi giỏ hàng.");
+        } else {
+            System.out.println("Không tìm thấy đĩa '" + disc.getTitle() + "' trong giỏ hàng để xóa.");
+        }
+    }
+
+
+    // --- Phương thức totalCost giữ nguyên ---
+    public float totalCost() {
+        float total = 0;
+        for (int i = 0; i < qtyOrdered; i++) {
+            // Thêm kiểm tra null phòng trường hợp mảng có lỗi
+            if (itemsOrdered[i] != null) {
+                total += itemsOrdered[i].getCost();
+            }
+        }
+        return total;
+    }
+
+    // --- BỎ phương thức displayCart() cũ ---
+    /*
+    public void displayCart() {
+        System.out.println("Các mặt hàng trong giỏ hàng:");
+        for (int i = 0; i < qtyOrdered; i++) {
+            System.out.println((i + 1) + " - " + itemsOrdered[i].getTitle() + " - " + itemsOrdered[i].getCost());
+        }
+        System.out.println("Tổng chi phí: " + totalCost());
+    }
+    */
+
+    // --- MỚI: Phương thức printCart() theo định dạng yêu cầu ---
+    public void printCart() {
+        System.out.println("***********************CART***********************");
+        System.out.println("Ordered Items:");
+        if (qtyOrdered == 0) {
+            System.out.println("Giỏ hàng trống.");
+        } else {
+            for (int i = 0; i < qtyOrdered; i++) {
+                if (itemsOrdered[i] != null) {
+                    // Sử dụng phương thức toString() của DigitalVideoDisc
+                    System.out.println((i + 1) + ". " + itemsOrdered[i].toString());
+                }
+            }
+        }
+        System.out.printf("Total cost: %.2f $\n", totalCost()); // Định dạng tổng tiền
+        System.out.println("***************************************************");
+    }
+
+    // --- MỚI: Phương thức searchById(int id) ---
+    public void searchById(int id) {
+        System.out.println("--- Tìm kiếm DVD theo ID: " + id + " ---");
+        boolean found = false;
+        for (int i = 0; i < qtyOrdered; i++) {
+            if (itemsOrdered[i] != null && itemsOrdered[i].getId() == id) {
+                System.out.println("Tìm thấy kết quả khớp:");
+                System.out.println(itemsOrdered[i].toString());
+                found = true;
+                break; // Giả sử ID là duy nhất, tìm thấy thì dừng
+            }
+        }
+        if (!found) {
+            System.out.println("Không tìm thấy DVD nào có ID = " + id + " trong giỏ hàng.");
+        }
+        System.out.println("--- Kết thúc tìm kiếm theo ID ---");
+    }
+
+    // --- MỚI: Phương thức searchByTitle(String title) ---
+    public void searchByTitle(String title) {
+        System.out.println("--- Tìm kiếm DVD theo tiêu đề chứa: '" + title + "' ---");
+        boolean found = false;
+        ArrayList<DigitalVideoDisc> results = new ArrayList<>(); // Dùng ArrayList để lưu kết quả
+
+        for (int i = 0; i < qtyOrdered; i++) {
+            if (itemsOrdered[i] != null && itemsOrdered[i].isMatch(title)) {
+                results.add(itemsOrdered[i]);
+                found = true;
+            }
+        }
+
+        if (!found) {
+            System.out.println("Không tìm thấy DVD nào có tiêu đề khớp với '" + title + "' trong giỏ hàng.");
+        } else {
+            System.out.println("Tìm thấy " + results.size() + " kết quả khớp:");
+            int count = 1;
+            for (DigitalVideoDisc dvd : results) {
+                System.out.println(count + ". " + dvd.toString());
+                count++;
+            }
+        }
+        System.out.println("--- Kết thúc tìm kiếm theo tiêu đề ---");
+    }
+}

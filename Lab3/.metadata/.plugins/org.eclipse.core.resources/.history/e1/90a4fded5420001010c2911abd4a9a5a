@@ -1,0 +1,73 @@
+package hust.soict.hedspi.test.cart; // Giả sử đặt trong package này
+
+import hust.soict.hedspi.aims.cart.Cart;
+import hust.soict.hedspi.aims.disc.DigitalVideoDisc;
+
+public class CartTest {
+
+    public static void main(String[] args) {
+        // Tạo giỏ hàng mới
+        Cart cart = new Cart();
+
+        // Tạo các đối tượng DVD mới và thêm vào giỏ hàng
+        DigitalVideoDisc dvd1 = new DigitalVideoDisc("The Lion King",
+                "Animation", "Roger Allers", 87, 19.95f);
+        cart.addDigitalVideoDisc(dvd1); // ID sẽ là 1 (giả sử là DVD đầu tiên được tạo trong toàn bộ chương trình nếu chạy riêng test này)
+                                       // Hoặc ID sẽ tiếp nối từ các lần chạy trước nếu static counter không reset
+
+        DigitalVideoDisc dvd2 = new DigitalVideoDisc("Star Wars",
+                "Science Fiction", "George Lucas", 124, 24.95f); // Sửa length từ 87 -> 124
+        cart.addDigitalVideoDisc(dvd2); // ID sẽ là 2 (hoặc tiếp theo)
+
+        DigitalVideoDisc dvd3 = new DigitalVideoDisc("Aladdin", // Sửa tên "Aladin" -> "Aladdin"
+                "Animation", 18.99f); // DVD này thiếu director và length
+        cart.addDigitalVideoDisc(dvd3); // ID sẽ là 3 (hoặc tiếp theo)
+
+        // In giỏ hàng để kiểm tra phương thức printCart()
+        System.out.println("--- Testing printCart() method ---");
+        cart.printCart();
+        /* Output mong đợi (ID có thể thay đổi tùy thuộc vào việc bạn chạy Aims.java trước hay không):
+        ***********************CART***********************
+        Ordered Items:
+        1. DVD - The Lion King - Animation - Roger Allers - 87: 19.95 $
+        2. DVD - Star Wars - Science Fiction - George Lucas - 124: 24.95 $
+        3. DVD - Aladdin - Animation - N/A - N/A: 18.99 $
+        Total cost: 63.89 $
+        ***************************************************
+        */
+
+        // Kiểm tra các phương thức tìm kiếm
+        System.out.println("\n--- Testing search methods ---");
+
+        // Test searchById()
+        System.out.println("\n--- Testing searchById() ---");
+        int idToSearch1 = dvd1.getId(); // Lấy ID thực tế của dvd1
+        System.out.println("Searching for ID: " + idToSearch1);
+        cart.searchById(idToSearch1); // Nên tìm thấy "The Lion King"
+
+        int idToSearch3 = dvd3.getId(); // Lấy ID thực tế của dvd3
+        System.out.println("\nSearching for ID: " + idToSearch3);
+        cart.searchById(idToSearch3); // Nên tìm thấy "Aladdin"
+
+        System.out.println("\nSearching for non-existent ID: 99");
+        cart.searchById(99);      // Nên thông báo không tìm thấy
+
+        // Test searchByTitle()
+        System.out.println("\n--- Testing searchByTitle() ---");
+        String titleToSearch1 = "Lion King";
+        System.out.println("\nSearching for title containing: '" + titleToSearch1 + "'");
+        cart.searchByTitle(titleToSearch1); // Nên tìm thấy "The Lion King"
+
+        String titleToSearch2 = "wars";
+        System.out.println("\nSearching for title containing: '" + titleToSearch2 + "' (case-insensitive)");
+        cart.searchByTitle(titleToSearch2); // Nên tìm thấy "Star Wars"
+
+        String titleToSearch3 = "Aladdin";
+        System.out.println("\nSearching for title containing: '" + titleToSearch3 + "'");
+        cart.searchByTitle(titleToSearch3); // Nên tìm thấy "Aladdin"
+
+        String titleToSearch4 = "NonExistent";
+        System.out.println("\nSearching for title containing: '" + titleToSearch4 + "'");
+        cart.searchByTitle(titleToSearch4); // Nên thông báo không tìm thấy
+    }
+}

@@ -1,0 +1,121 @@
+package hust.soict.hedspi.aims.media;
+
+
+import java.util.ArrayList;
+import java.util.List;
+
+// Lớp CompactDisc kế thừa Disc và triển khai Playable
+public class CompactDisc extends Disc implements Playable {
+
+    // Các trường riêng của CD
+    private String artist;
+    private List<Track> tracks = new ArrayList<>(); // Khởi tạo danh sách tracks
+
+    // --- Constructors ---
+    // Constructor cơ bản nhất
+    public CompactDisc(int id, String title, String category, float cost, String director, String artist) {
+        // Gọi constructor của Disc. Length của CD sẽ được tính từ tracks, nên truyền 0 cho length của Disc.
+        super(id, title, category, cost, 0, director);
+        this.artist = artist;
+    }
+
+    // Constructor có thêm danh sách tracks ban đầu
+     public CompactDisc(int id, String title, String category, float cost, String director, String artist, List<Track> tracks) {
+        super(id, title, category, cost, 0, director);
+        this.artist = artist;
+        if (tracks != null) {
+            // Thêm từng track để kiểm tra trùng lặp nếu cần, hoặc addAll nếu không
+             for(Track t : tracks) {
+                 this.addTrack(t); // Dùng addTrack để có kiểm tra
+             }
+            // Hoặc đơn giản hơn nếu không cần kiểm tra khi khởi tạo:
+            // this.tracks.addAll(tracks);
+        }
+    }
+
+    // --- Getter cho artist ---
+    public String getArtist() {
+        return artist;
+    }
+
+    // --- Phương thức quản lý tracks ---
+    public void addTrack(Track track) {
+        if (track == null) {
+            System.out.println("Lỗi: Không thể thêm track null.");
+            return;
+        }
+        if (tracks.contains(track)) { // contains() sử dụng Track.equals()
+            System.out.println("Thông báo: Track '" + track.getTitle() + "' đã tồn tại trong CD.");
+        } else {
+            tracks.add(track);
+            System.out.println("Đã thêm track: " + track.getTitle());
+        }
+    }
+
+    public void removeTrack(Track track) {
+        if (track == null) {
+            System.out.println("Lỗi: Không thể xóa track null.");
+            return;
+        }
+        boolean removed = tracks.remove(track); // remove() sử dụng Track.equals()
+        if (removed) {
+            System.out.println("Đã xóa track: " + track.getTitle());
+        } else {
+            System.out.println("Lỗi: Không tìm thấy track '" + track.getTitle() + "' để xóa.");
+        }
+    }
+
+    // --- Tính tổng độ dài của CD ---
+    // Ghi đè phương thức getLength() từ lớp Disc
+    @Override
+    public int getLength() {
+        int totalLength = 0;
+        for (Track track : tracks) {
+            totalLength += track.getLength();
+        }
+        return totalLength;
+    }
+
+    // --- Triển khai phương thức play() từ Playable ---
+    @Override
+    public void play() {
+        if (tracks.isEmpty()) {
+            System.out.println("Cannot play CD: " + this.getTitle() + " - No tracks available.");
+            return;
+        }
+
+        System.out.println("------------------------------------");
+        System.out.println("Playing CD: " + this.getTitle() + " by " + this.artist);
+        System.out.println("CD Category: " + this.getCategory());
+        System.out.println("CD Director: " + (this.getDirector() != null ? this.getDirector() : "N/A"));
+        System.out.println("Total Length: " + this.getLength() + "s");
+         System.out.println("--- Tracks ---");
+        boolean canPlay = false;
+        for (Track track : tracks) {
+             if (track.getLength() > 0) {
+                track.play(); // Gọi play() của từng track
+                canPlay = true;
+             } else {
+                 System.out.println("Skipping track: " + track.getTitle() + " - Length is zero or less.");
+             }
+        }
+         if (!canPlay) {
+              System.out.println("Warning: None of the tracks in the CD '" + this.getTitle() + "' could be played (length <= 0).");
+         }
+        System.out.println("------------------------------------");
+    }
+
+     // --- toString() ---
+    @Override
+    public String toString() {
+        return String.format("CD [%d] - %s - %s - %s - %s - %d: %.2f $ (Tracks: %d)",
+                getId(),
+                getTitle(),
+                (getCategory() != null ? getCategory() : "N/A"),
+                (getDirector() != null ? getDirector() : "N/A"),
+                (artist != null ? artist : "N/A"),
+                getLength(), // Tổng length từ các track
+                getCost(),
+                tracks.size()); // Số lượng track
+    }
+}

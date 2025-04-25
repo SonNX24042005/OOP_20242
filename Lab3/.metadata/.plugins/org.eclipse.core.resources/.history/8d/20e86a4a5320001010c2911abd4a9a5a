@@ -1,0 +1,54 @@
+package hust.soict.hedspi.garbage;
+
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+public class NoGarbage {
+
+    public static void main(String[] args) {
+        // Đảm bảo sử dụng cùng tên file với GarbageCreator để so sánh
+        String filename = "large_text_file.txt"; // HOẶC ví dụ: "C:/path/to/your/large_file.log"
+        byte[] inputBytes = { 0 };
+        long startTime, endTime;
+
+        try {
+            inputBytes = Files.readAllBytes(Paths.get(filename));
+             System.out.println("Read file successfully. Size: " + inputBytes.length + " bytes."); // Lặp lại để xác nhận đọc file
+
+            // --- Bắt đầu đo thời gian nối chuỗi bằng StringBuilder ---
+            startTime = System.currentTimeMillis();
+            // Sử dụng StringBuilder (hoặc StringBuffer nếu cần thread-safe)
+            StringBuilder outputStringBuilder = new StringBuilder(inputBytes.length); // Khởi tạo với capacity ước lượng
+            for (byte b : inputBytes) {
+                // append() hiệu quả hơn nhiều, không tạo đối tượng String mới liên tục
+                outputStringBuilder.append((char)b);
+            }
+            // Chuyển đổi thành String chỉ một lần khi cần
+            String finalString = outputStringBuilder.toString();
+            endTime = System.currentTimeMillis();
+            // --- Kết thúc đo thời gian ---
+
+            System.out.println("\nNoGarbage (using StringBuilder):");
+            System.out.printf("Time taken: %d ms%n", (endTime - startTime));
+            // System.out.println("Final string length: " + finalString.length()); // Bỏ comment nếu muốn xem độ dài
+
+            /*
+             * Lưu ý: Phương pháp này hiệu quả hơn rất nhiều so với việc dùng toán tử '+'
+             * trong vòng lặp, đặc biệt với các file lớn. Nó giảm thiểu việc tạo "rác"
+             * và thường chạy nhanh hơn đáng kể, ít tốn bộ nhớ hơn.
+             */
+
+        } catch (IOException e) {
+            System.err.println("Error reading file: " + filename);
+            System.err.println("Please ensure the file exists and the path is correct.");
+            e.printStackTrace();
+        }
+        // OutOfMemoryError ít khả năng xảy ra hơn nhiều ở đây trừ khi file cực lớn
+         catch (OutOfMemoryError e) {
+             System.err.println("OutOfMemoryError! The file might be extremely large even for StringBuilder.");
+             e.printStackTrace();
+        }
+    }
+}

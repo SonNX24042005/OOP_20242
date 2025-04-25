@@ -1,0 +1,156 @@
+package hust.soict.hedspi.aims.media;
+import java.util.Objects; // Thêm import cho Objects nếu cần kiểm tra null
+
+public class DigitalVideoDisc {
+    private String title;
+    private String category;
+    private String director;
+    private int length;
+    private float cost;
+    private int id;
+    private static int nbDigitalVideoDiscs = 0;
+
+    // --- Các constructor giữ nguyên ---
+    public DigitalVideoDisc(String title) {
+        super();
+        this.title = title;
+        this.id = ++nbDigitalVideoDiscs;
+    }
+
+    public DigitalVideoDisc(String title, String category, String director, int length, float cost) {
+        super();
+        this.title = title;
+        this.category = category;
+        this.director = director;
+        this.length = length;
+        this.cost = cost;
+        this.id = ++nbDigitalVideoDiscs;
+    }
+
+    public DigitalVideoDisc(String title, String category, String director, float cost) {
+        super();
+        this.title = title;
+        this.category = category;
+        this.director = director;
+        this.cost = cost;
+        this.id = ++nbDigitalVideoDiscs;
+    }
+
+    public DigitalVideoDisc(String title, String category, float cost) {
+        super();
+        this.title = title;
+        this.category = category;
+        this.cost = cost;
+        this.id = ++nbDigitalVideoDiscs;
+    }
+
+    // --- Các getter/setter giữ nguyên ---
+    public String getTitle() {
+        return title;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
+
+	public void setDirector(String director) {
+		this.director = director;
+	}
+
+	public void setLength(int length) {
+		this.length = length;
+	}
+
+	public void setCost(float cost) {
+		this.cost = cost;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public String getDirector() {
+        return director;
+    }
+
+    public int getLength() {
+        return length;
+    }
+
+    public float getCost() {
+        return cost;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    // --- MỚI: Phương thức toString() ---
+    @Override
+    public String toString() {
+        // Định dạng chuỗi theo yêu cầu: DVD - [Title] - [category] - [Director] - [Length]: [Price] $
+        // Xử lý trường hợp director hoặc length không được cung cấp (là null hoặc 0)
+        String directorStr = (director != null && !director.isEmpty()) ? director : "N/A";
+        String lengthStr = (length > 0) ? String.valueOf(length) : "N/A";
+
+        return String.format("DVD - %s - %s - %s - %s: %.2f $",
+                title,
+                (category != null ? category : "N/A"),
+                directorStr,
+                lengthStr,
+                cost);
+    }
+
+    // --- MỚI: Phương thức isMatch(String title) ---
+    /**
+     * Kiểm tra xem tiêu đề của DVD này có khớp với tiêu đề được cung cấp hay không.
+     * Giả sử quy tắc khớp là không phân biệt chữ hoa chữ thường và chứa chuỗi.
+     * (Bạn có thể thay đổi logic này nếu quy tắc khớp khác)
+     * @param titleToMatch Tiêu đề cần kiểm tra
+     * @return true nếu khớp, false nếu không khớp
+     */
+    public boolean isMatch(String titleToMatch) {
+        if (titleToMatch == null || this.title == null) {
+            return false;
+        }
+        // Quy tắc khớp đơn giản: kiểm tra xem title của DVD có chứa titleToMatch (không phân biệt hoa thường)
+         return this.title.toLowerCase().contains(titleToMatch.toLowerCase());
+        // Hoặc nếu muốn khớp chính xác (không phân biệt hoa thường):
+        // return this.title.equalsIgnoreCase(titleToMatch);
+    }
+
+    // --- GHI ĐÈ equals và hashCode để removeDigitalVideoDisc hoạt động chính xác hơn ---
+    // Mặc dù không được yêu cầu trực tiếp, nhưng nên làm để việc so sánh đối tượng đáng tin cậy hơn
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DigitalVideoDisc that = (DigitalVideoDisc) o;
+        // Coi hai DVD là giống nhau nếu chúng có cùng ID
+        // Hoặc bạn có thể định nghĩa lại dựa trên các thuộc tính khác nếu cần
+        return id == that.id;
+        // Hoặc so sánh dựa trên tất cả các thuộc tính quan trọng:
+        // return length == that.length &&
+        //        Float.compare(that.cost, cost) == 0 &&
+        //        id == that.id &&
+        //        Objects.equals(title, that.title) &&
+        //        Objects.equals(category, that.category) &&
+        //        Objects.equals(director, that.director);
+    }
+
+    @Override
+    public int hashCode() {
+        // Dựa trên thuộc tính dùng trong equals
+        return Objects.hash(id);
+        // Hoặc dựa trên tất cả các thuộc tính:
+        // return Objects.hash(title, category, director, length, cost, id);
+    }
+}

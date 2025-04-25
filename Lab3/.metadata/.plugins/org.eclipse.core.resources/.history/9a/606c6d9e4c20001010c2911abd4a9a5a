@@ -1,0 +1,125 @@
+package hust.soict.hedspi.aims.disc;
+
+public class DigitalVideoDisc {
+    private String title;
+    private String category;
+    private String director;
+    private int length;
+    private float cost;
+    private int id;
+    private static int nbDigitalVideoDiscs = 0;
+
+    // --- Các Constructor hiện có ---
+    public DigitalVideoDisc(String title) {
+        super();
+        this.title = title;
+        this.id = ++nbDigitalVideoDiscs;
+    }
+
+    public DigitalVideoDisc(String title, String category, String director, int length, float cost) {
+        super();
+        this.title = title;
+        this.category = category;
+        this.director = director;
+        this.length = length;
+        this.cost = cost;
+        this.id = ++nbDigitalVideoDiscs;
+    }
+
+    public DigitalVideoDisc(String title, String category, String director, float cost) {
+        super();
+        this.title = title;
+        this.category = category;
+        this.director = director;
+        this.cost = cost;
+        this.id = ++nbDigitalVideoDiscs;
+    }
+
+    public DigitalVideoDisc(String title, String category, float cost) {
+        super();
+        this.title = title;
+        this.category = category;
+        this.cost = cost;
+        this.id = ++nbDigitalVideoDiscs;
+    }
+
+    // --- Các Getter và Setter hiện có ---
+    public String getTitle() {
+        return title;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
+
+	public void setDirector(String director) {
+		this.director = director;
+	}
+
+	public void setLength(int length) {
+		this.length = length;
+	}
+
+	public void setCost(float cost) {
+		this.cost = cost;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public String getDirector() {
+        return director;
+    }
+
+    public int getLength() {
+        return length;
+    }
+
+    public float getCost() {
+        return cost;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    // --- Phương thức toString() mới ---
+    @Override
+    public String toString() {
+        // Xử lý trường hợp các thuộc tính có thể null hoặc 0 để hiển thị đẹp hơn
+        String categoryStr = (category != null) ? category : "N/A";
+        String directorStr = (director != null) ? director : "N/A";
+        String lengthStr = (length > 0) ? String.valueOf(length) : "N/A";
+
+        return "DVD - " + title + " - " + categoryStr + " - " +
+               directorStr + " - " + lengthStr + ": " + cost + " $";
+    }
+
+    // --- Thêm phương thức equals để so sánh DVD (cần cho remove và search) ---
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true; // Nếu cùng một đối tượng
+        if (obj == null || getClass() != obj.getClass()) return false; // Nếu khác lớp hoặc null
+        DigitalVideoDisc otherDvd = (DigitalVideoDisc) obj;
+        // Coi hai DVD là giống nhau nếu chúng có cùng ID
+        // (Hoặc bạn có thể định nghĩa lại tiêu chí so sánh, ví dụ dựa trên title, director...)
+        return this.id == otherDvd.id;
+    }
+
+    // --- Thêm phương thức isMatch(String title) để kiểm tra khớp tiêu đề ---
+    // Phương thức này giúp tìm kiếm theo tiêu đề dễ dàng hơn
+    // Giả sử quy tắc khớp là chứa chuỗi (không phân biệt hoa thường)
+    public boolean isMatch(String title) {
+        // So sánh không phân biệt hoa thường và kiểm tra xem tiêu đề DVD có chứa chuỗi tìm kiếm không
+        return this.title.toLowerCase().contains(title.toLowerCase());
+    }
+}

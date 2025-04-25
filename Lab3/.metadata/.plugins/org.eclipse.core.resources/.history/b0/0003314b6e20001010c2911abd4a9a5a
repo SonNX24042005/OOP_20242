@@ -1,0 +1,230 @@
+package hust.soict.hedspi.aims.cart; // Giữ nguyên package của Cart
+
+// Import các lớp cần thiết
+import hust.soict.hedspi.aims.media.Media; // Quan trọng: Import lớp cha Media
+import hust.soict.hedspi.aims.media.DigitalVideoDisc; // Vẫn cần nếu có logic cụ thể nào đó, hoặc để test
+import hust.soict.hedspi.aims.media.Book; // Import lớp Book
+import hust.soict.hedspi.aims.media.CompactDisc; // Import lớp CompactDisc
+
+import java.util.ArrayList;
+import java.util.Collections; // Có thể cần cho sắp xếp sau này
+import java.util.Comparator; // Có thể cần cho sắp xếp sau này
+
+
+public class Cart {
+    // --- XÓA CÁC KHAI BÁO CŨ ---
+    // public static final int MAX_NUMBERS_ORDERED = 20;
+    // private DigitalVideoDisc itemsOrdered[] = new DigitalVideoDisc[MAX_NUMBERS_ORDERED];
+    // private int qtyOrdered = 0;
+
+    // --- THÊM KHAI BÁO MỚI ---
+    private ArrayList<Media> itemsOrdered = new ArrayList<>(); // Sử dụng ArrayList<Media>
+
+    // --- Phương thức addMedia ---
+    /**
+     * Thêm một đối tượng Media vào giỏ hàng.
+     * Không thêm nếu đối tượng là null hoặc đã tồn tại trong giỏ hàng (dựa trên equals).
+     * @param media Đối tượng Media cần thêm.
+     */
+    public void addMedia(Media media) {
+        if (media == null) {
+            System.out.println("Lỗi: Không thể thêm đối tượng null vào giỏ hàng.");
+            return;
+        }
+        // Kiểm tra xem media đã tồn tại trong giỏ hàng chưa
+        if (itemsOrdered.contains(media)) { // Dựa vào Media.equals() (đã ghi đè theo ID)
+            System.out.println("Thông báo: Mục '" + media.getTitle() + "' (ID: " + media.getId() + ") đã có trong giỏ hàng.");
+        } else {
+            itemsOrdered.add(media);
+            System.out.println("Đã thêm '" + media.getTitle() + "' vào giỏ hàng.");
+        }
+    }
+
+     /** Overload để thêm nhiều media cùng lúc **/
+     public void addMedia(Media... mediaList) {
+         if (mediaList == null) return;
+         for (Media media : mediaList) {
+             addMedia(media); // Gọi lại phương thức add đơn lẻ
+         }
+     }
+
+
+    // --- Phương thức removeMedia ---
+    /**
+     * Xóa một đối tượng Media khỏi giỏ hàng.
+     * Thông báo nếu đối tượng là null hoặc không tìm thấy.
+     * @param media Đối tượng Media cần xóa.
+     */
+    public void removeMedia(Media media) {
+        if (media == null) {
+            System.out.println("Lỗi: Không thể xóa đối tượng null khỏi giỏ hàng.");
+            return;
+        }
+        // Thử xóa media khỏi danh sách
+        boolean removed = itemsOrdered.remove(media); // Dựa vào Media.equals()
+
+        if (removed) {
+            System.out.println("Đã xóa '" + media.getTitle() + "' (ID: " + media.getId() + ") khỏi giỏ hàng.");
+        } else {
+            System.out.println("Lỗi: Không tìm thấy mục '" + media.getTitle() + "' (ID: " + media.getId() + ") trong giỏ hàng để xóa.");
+        }
+    }
+
+
+    // --- Phương thức totalCost đã cập nhật ---
+    /**
+     * Tính tổng chi phí của tất cả các mục Media trong giỏ hàng.
+     * @return Tổng chi phí.
+     */
+    public float totalCost() {
+        float total = 0.0f;
+        // Duyệt qua tất cả các Media trong ArrayList
+        for (Media media : itemsOrdered) {
+            if (media != null) { // Kiểm tra null (dù ArrayList thường không chứa null nếu add đúng)
+                total += media.getCost(); // Lấy cost từ lớp cha Media
+            }
+        }
+        return total;
+    }
+
+    // --- Phương thức printCart đã cập nhật ---
+    /**
+     * In ra thông tin chi tiết của giỏ hàng theo định dạng yêu cầu.
+     */
+    public void printCart() {
+        System.out.println("***********************CART***********************");
+        if (itemsOrdered.isEmpty()) {
+            System.out.println("Giỏ hàng trống.");
+        } else {
+            System.out.println("Ordered Items (theo thứ tự thêm vào):");
+            for (int i = 0; i < itemsOrdered.size(); i++) {
+                Media item = itemsOrdered.get(i); // Lấy item ra biến riêng
+                if (item != null) { // Thêm kiểm tra null cho chắc chắn
+                     System.out.println((i + 1) + ". " + item.toString()); // Gọi toString()
+                } else {
+                     System.out.println((i + 1) + ". [LỖI: Mục bị null]"); // Thông báo nếu có null
+                }
+            }
+        }
+        System.out.printf("Total cost: %.2f $\n", totalCost());
+        System.out.println("***************************************************");
+    }
+    // --- CÁC PHƯƠNG THỨC IN ĐÃ SẮP XẾP (MỚI) ---
+
+    /**
+     * In giỏ hàng đã được sắp xếp theo Tiêu đề rồi đến Chi phí.
+     */
+    public void printSortedByTitleCost() {
+        if (itemsOrdered.isEmpty()) {
+            printCart(); // In thông báo giỏ hàng trống
+            return;
+        }
+        // Tạo một bản sao để không thay đổi thứ tự gốc của giỏ hàng
+        ArrayList<Media> sortedList = new ArrayList<>(itemsOrdered);
+        // Sắp xếp bản sao bằng Comparator đã định nghĩa trong Media
+        Collections.sort(sortedList, Media.COMPARE_BY_TITLE_COST);
+
+        // In danh sách đã sắp xếp
+        System.out.println("******************CART (Sorted by Title/Cost)******************");
+        System.out.println("Ordered Items:");
+        for (int i = 0; i < sortedList.size(); i++) {
+            System.out.println((i + 1) + ". " + sortedList.get(i).toString());
+        }
+        System.out.printf("Total cost: %.2f $\n", totalCost()); // Tổng tiền không đổi
+        System.out.println("**************************************************************");
+    }
+
+     /**
+     * In giỏ hàng đã được sắp xếp theo Chi phí rồi đến Tiêu đề.
+     */
+    public void printSortedByCostTitle() {
+        if (itemsOrdered.isEmpty()) {
+            printCart(); // In thông báo giỏ hàng trống
+            return;
+        }
+        // Tạo một bản sao
+        ArrayList<Media> sortedList = new ArrayList<>(itemsOrdered);
+        // Sắp xếp bản sao bằng Comparator đã định nghĩa trong Media
+        Collections.sort(sortedList, Media.COMPARE_BY_COST_TITLE);
+
+        // In danh sách đã sắp xếp
+        System.out.println("******************CART (Sorted by Cost/Title)******************");
+        System.out.println("Ordered Items:");
+        for (int i = 0; i < sortedList.size(); i++) {
+            System.out.println((i + 1) + ". " + sortedList.get(i).toString());
+        }
+        System.out.printf("Total cost: %.2f $\n", totalCost()); // Tổng tiền không đổi
+        System.out.println("**************************************************************");
+    }
+
+    // --- Cập nhật các phương thức tìm kiếm ---
+
+    /**
+     * Tìm kiếm và hiển thị Media trong giỏ hàng theo ID.
+     * @param id ID cần tìm.
+     */
+    public void searchById(int id) {
+        System.out.println("--- Tìm kiếm Media theo ID: " + id + " ---");
+        boolean found = false;
+        for (Media media : itemsOrdered) {
+            if (media != null && media.getId() == id) {
+                System.out.println("Tìm thấy kết quả khớp:");
+                System.out.println(media.toString()); // Sử dụng toString() đã ghi đè
+                found = true;
+                break; // ID là duy nhất, tìm thấy thì dừng
+            }
+        }
+        if (!found) {
+            System.out.println("Không tìm thấy Media nào có ID = " + id + " trong giỏ hàng.");
+        }
+        System.out.println("--- Kết thúc tìm kiếm theo ID ---");
+    }
+
+    /**
+     * Tìm kiếm và hiển thị các Media trong giỏ hàng theo tiêu đề (chứa chuỗi, không phân biệt hoa thường).
+     * @param title Tiêu đề hoặc một phần tiêu đề cần tìm.
+     */
+    public void searchByTitle(String title) {
+        if (title == null || title.trim().isEmpty()) {
+            System.out.println("Lỗi: Tiêu đề tìm kiếm không được để trống.");
+            return;
+        }
+        String searchLower = title.trim().toLowerCase(); // Chuẩn hóa tiêu đề tìm kiếm
+        System.out.println("--- Tìm kiếm Media theo tiêu đề chứa: '" + title.trim() + "' ---");
+        ArrayList<Media> results = new ArrayList<>(); // Lưu kết quả tìm thấy
+
+        for (Media media : itemsOrdered) {
+            // Kiểm tra null cho media và title của nó trước khi so sánh
+            if (media != null && media.getTitle() != null && media.getTitle().toLowerCase().contains(searchLower)) {
+                results.add(media);
+            }
+        }
+
+        if (results.isEmpty()) {
+            System.out.println("Không tìm thấy Media nào có tiêu đề khớp với '" + title.trim() + "' trong giỏ hàng.");
+        } else {
+            System.out.println("Tìm thấy " + results.size() + " kết quả khớp:");
+            int count = 1;
+            for (Media media : results) {
+                System.out.println(count + ". " + media.toString()); // Sử dụng toString() đã ghi đè
+                count++;
+            }
+        }
+        System.out.println("--- Kết thúc tìm kiếm theo tiêu đề ---");
+    }
+
+    // --- Các phương thức cũ bị xóa ---
+    // public void addDigitalVideoDisc(...)
+    // public void removeDigitalVideoDisc(...)
+    // public void displayCart() // Thay bằng printCart()
+
+    // --- Phương thức phụ trợ (tùy chọn) ---
+    public int getItemsCount() {
+        return itemsOrdered.size();
+    }
+
+    public void emptyCart() {
+        itemsOrdered.clear();
+        System.out.println("Giỏ hàng đã được làm rỗng.");
+    }
+}

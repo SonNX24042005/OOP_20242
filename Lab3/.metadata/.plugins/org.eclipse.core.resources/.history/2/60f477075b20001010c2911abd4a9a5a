@@ -1,0 +1,65 @@
+package hust.soict.hedspi.aims.media;
+
+import java.util.Objects;
+
+public class Track implements Playable {
+
+    private String title;
+    private int length;
+
+    // Constructor và getter giữ nguyên...
+    public Track(String title, int length) {
+        this.title = title;
+         if (length >= 0) {
+            this.length = length;
+        } else {
+            this.length = 0;
+            System.out.println("Warning: Track length cannot be negative. Setting length for '" + title + "' to 0.");
+        }
+    }
+    public String getTitle() { return title; }
+    public int getLength() { return length; }
+    public void play() { /* ... implementation ... */ }
+    @Override public String toString() { /* ... implementation ... */ }
+
+    // --- GHI ĐÈ equals() THEO YÊU CẦU MỚI ---
+    /**
+     * So sánh đối tượng Track này với một đối tượng khác.
+     * Hai đối tượng Track được coi là bằng nhau nếu chúng có cùng tiêu đề (title)
+     * VÀ cùng độ dài (length).
+     *
+     * @param o Đối tượng cần so sánh.
+     * @return true nếu các đối tượng được coi là bằng nhau, false nếu ngược lại.
+     */
+    @Override
+    public boolean equals(Object o) {
+        // 1. Kiểm tra xem có phải là chính nó không
+        if (this == o) return true;
+
+        // 2. Kiểm tra xem o có null không, hoặc có phải là lớp Track không
+        //    Ở đây dùng getClass() == o.getClass() hợp lý hơn vì chỉ muốn so sánh Track với Track.
+        if (o == null || getClass() != o.getClass()) return false;
+
+        // 3. Ép kiểu o thành Track
+        Track track = (Track) o;
+
+        // 4. So sánh cả title và length
+        //    Sử dụng Objects.equals cho title để xử lý null
+        return this.getLength() == track.getLength() &&
+               Objects.equals(this.getTitle(), track.getTitle());
+    }
+
+    // --- GHI ĐÈ hashCode() TƯƠNG ỨNG VỚI equals() MỚI ---
+    /**
+     * Trả về mã hash cho đối tượng Track này.
+     * Mã hash dựa trên cả tiêu đề (title) và độ dài (length) để nhất quán
+     * với phương thức equals().
+     *
+     * @return Mã hash dựa trên tiêu đề và độ dài.
+     */
+    @Override
+    public int hashCode() {
+        // Sử dụng cả title và length để tính hashCode
+        return Objects.hash(this.getTitle(), this.getLength());
+    }
+}

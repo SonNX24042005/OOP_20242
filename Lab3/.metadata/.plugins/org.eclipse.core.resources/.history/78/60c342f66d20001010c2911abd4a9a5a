@@ -1,0 +1,54 @@
+package hust.soict.hedspi.aims;
+import hust.soict.hedspi.aims.cart.Cart;
+import hust.soict.hedspi.aims.media.DigitalVideoDisc;
+
+public class Aims {
+
+    public static void main(String[] args) {
+        // Tạo giỏ hàng mới
+        Cart anOrder = new Cart();
+
+        // Tạo các đối tượng DVD mới
+        DigitalVideoDisc dvd1 = new DigitalVideoDisc("The Lion King",
+                "Animation", "Roger Allers", 87, 19.95f);
+        DigitalVideoDisc dvd2 = new DigitalVideoDisc("Star Wars",
+                "Science Fiction", "George Lucas", 124, 24.95f); // Thêm length cho dvd2
+        DigitalVideoDisc dvd3 = new DigitalVideoDisc("Aladdin", // Sửa tên cho đúng chính tả
+                "Animation", 18.99f); // Thiếu Director và Length
+        DigitalVideoDisc dvd4 = new DigitalVideoDisc("The Matrix",
+                "Science Fiction", "Wachowskis", 136, 22.50f);
+        DigitalVideoDisc dvd5 = new DigitalVideoDisc("Lion King II", // Thêm DVD có title tương tự
+                        "Animation", "Darrell Rooney", 72, 15.55f);
+
+
+        // Thêm DVD vào giỏ hàng
+        anOrder.addDigitalVideoDisc(dvd1);
+        anOrder.addDigitalVideoDisc(dvd2);
+        anOrder.addDigitalVideoDisc(dvd3);
+        anOrder.addDigitalVideoDisc(dvd4);
+        anOrder.addDigitalVideoDisc(dvd5);
+
+        // In giỏ hàng với định dạng mới
+        System.out.println("--- Giỏ hàng ban đầu ---");
+        anOrder.printCart();
+
+        // Xóa một DVD
+        System.out.println("\n--- Xóa DVD 'Star Wars' ---");
+        anOrder.removeDigitalVideoDisc(dvd2); // Xóa dvd2
+
+        // In lại giỏ hàng
+        System.out.println("\n--- Giỏ hàng sau khi xóa ---");
+        anOrder.printCart();
+
+        // Tìm kiếm theo ID
+        System.out.println("\n--- Thử tìm kiếm ---");
+        anOrder.searchById(1); // Tìm ID của dvd1 (The Lion King)
+        anOrder.searchById(3); // Tìm ID của dvd3 (Aladdin)
+        anOrder.searchById(99); // Tìm ID không tồn tại
+
+        // Tìm kiếm theo Title
+        anOrder.searchByTitle("King"); // Tìm các DVD có chứa "King"
+        anOrder.searchByTitle("matrix"); // Tìm DVD chứa "matrix" (không phân biệt hoa thường)
+        anOrder.searchByTitle("Avatar"); // Tìm title không tồn tại
+    }
+}

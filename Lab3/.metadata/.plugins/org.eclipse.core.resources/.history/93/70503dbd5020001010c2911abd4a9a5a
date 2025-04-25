@@ -1,0 +1,108 @@
+package hust.soict.dsai.aims.store;
+
+// Quan trọng: Đảm bảo import đúng lớp DigitalVideoDisc từ package của nó
+import hust.soict.hedspi.aims.disc.DigitalVideoDisc;
+
+public class Store {
+    // Sử dụng mảng để lưu trữ DVD theo yêu cầu
+    private DigitalVideoDisc itemsInStore[];
+    private int itemCount; // Theo dõi số lượng DVD hiện có trong cửa hàng
+    private static final int MAX_ITEMS = 1000; // Giả sử cửa hàng có sức chứa tối đa
+
+    // Constructor
+    public Store() {
+        // Khởi tạo mảng với kích thước tối đa
+        itemsInStore = new DigitalVideoDisc[MAX_ITEMS];
+        itemCount = 0; // Ban đầu cửa hàng trống
+    }
+
+    // Phương thức thêm DVD vào cửa hàng
+    public void addDVD(DigitalVideoDisc dvd) {
+        if (dvd == null) {
+            System.out.println("Lỗi: Không thể thêm DVD null vào cửa hàng.");
+            return;
+        }
+
+        if (itemCount >= itemsInStore.length) {
+            System.out.println("Lỗi: Cửa hàng đã đầy, không thể thêm DVD '" + dvd.getTitle() + "'.");
+            // Có thể xem xét việc tăng kích thước mảng ở đây nếu muốn linh hoạt hơn
+            return;
+        }
+
+        // Kiểm tra xem DVD đã tồn tại trong cửa hàng chưa (dựa trên phương thức equals)
+        for (int i = 0; i < itemCount; i++) {
+            if (itemsInStore[i].equals(dvd)) {
+                System.out.println("Thông báo: DVD '" + dvd.getTitle() + "' đã có trong cửa hàng.");
+                return; // Không thêm nếu đã tồn tại
+            }
+        }
+
+        // Thêm DVD vào vị trí trống tiếp theo
+        itemsInStore[itemCount] = dvd;
+        itemCount++;
+        System.out.println("DVD '" + dvd.getTitle() + "' đã được thêm vào cửa hàng.");
+    }
+
+    // Phương thức xóa DVD khỏi cửa hàng
+    public void removeDVD(DigitalVideoDisc dvd) {
+        if (dvd == null) {
+            System.out.println("Lỗi: Không thể xóa DVD null khỏi cửa hàng.");
+            return;
+        }
+
+        if (itemCount == 0) {
+            System.out.println("Thông báo: Cửa hàng đang trống, không có DVD để xóa.");
+            return;
+        }
+
+        int foundIndex = -1;
+        // Tìm vị trí của DVD cần xóa
+        for (int i = 0; i < itemCount; i++) {
+            if (itemsInStore[i].equals(dvd)) {
+                foundIndex = i;
+                break;
+            }
+        }
+
+        if (foundIndex != -1) {
+            // Dịch chuyển các phần tử phía sau về trước để lấp chỗ trống
+            for (int i = foundIndex; i < itemCount - 1; i++) {
+                itemsInStore[i] = itemsInStore[i + 1];
+            }
+            // Xóa tham chiếu ở vị trí cuối cùng (giờ đã bị trùng lặp)
+            itemsInStore[itemCount - 1] = null;
+            itemCount--; // Giảm số lượng DVD
+            System.out.println("DVD '" + dvd.getTitle() + "' đã được xóa khỏi cửa hàng.");
+        } else {
+            System.out.println("Lỗi: Không tìm thấy DVD '" + dvd.getTitle() + "' trong cửa hàng để xóa.");
+        }
+    }
+
+    // Phương thức phụ trợ để xem các DVD trong cửa hàng (hữu ích cho việc test)
+    public void printStore() {
+        System.out.println("========== Cửa hàng hiện có ==========");
+        if (itemCount == 0) {
+            System.out.println("Cửa hàng trống.");
+        } else {
+            System.out.println("Số lượng DVD: " + itemCount);
+            for (int i = 0; i < itemCount; i++) {
+                System.out.println((i + 1) + ". " + itemsInStore[i].toString()); // Sử dụng toString đã tạo trước đó
+            }
+        }
+        System.out.println("======================================");
+    }
+
+    // Getter để lớp Test có thể truy cập (nếu cần kiểm tra sâu hơn)
+    public int getItemCount() {
+        return itemCount;
+    }
+
+     public DigitalVideoDisc[] getItemsInStore() {
+        // Trả về một bản sao để tránh sửa đổi từ bên ngoài (tùy chọn)
+        DigitalVideoDisc[] copy = new DigitalVideoDisc[itemCount];
+        System.arraycopy(itemsInStore, 0, copy, 0, itemCount);
+        return copy;
+        // Hoặc trả về trực tiếp nếu không lo ngại về việc sửa đổi từ bên ngoài
+        // return itemsInStore; // Lưu ý: chỉ trả về các phần tử hợp lệ
+     }
+}

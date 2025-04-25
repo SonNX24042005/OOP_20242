@@ -1,0 +1,153 @@
+package hust.soict.hedspi.aims.store; // Giữ nguyên package
+
+// Import các lớp cần thiết
+import hust.soict.hedspi.aims.media.Media; // Quan trọng: Import lớp cha Media
+import hust.soict.hedspi.aims.media.DigitalVideoDisc; // Có thể cần cho test hoặc logic cụ thể
+import hust.soict.hedspi.aims.media.Book;
+import hust.soict.hedspi.aims.media.CompactDisc;
+
+import java.util.ArrayList;
+import java.util.Collections; // Tùy chọn cho sắp xếp
+import java.util.Comparator; // Tùy chọn cho sắp xếp
+
+public class Store {
+    // --- XÓA CÁC KHAI BÁO CŨ ---
+    // private DigitalVideoDisc itemsInStore[];
+    // private int itemCount;
+    // private static final int MAX_ITEMS = 1000;
+
+    // --- THÊM KHAI BÁO MỚI ---
+    private ArrayList<Media> itemsInStore = new ArrayList<>(); // Sử dụng ArrayList<Media>
+
+    // --- Constructor ---
+    // Constructor mặc định là đủ, ArrayList đã được khởi tạo
+    public Store() {
+        // Có thể thêm logic khởi tạo ban đầu cho cửa hàng nếu cần
+        // Ví dụ: thêm một vài sản phẩm mặc định
+    }
+
+    // --- Phương thức addMedia ---
+    /**
+     * Thêm một đối tượng Media vào kho của cửa hàng.
+     * Không thêm nếu đối tượng là null hoặc đã tồn tại trong kho (dựa trên equals).
+     * @param media Đối tượng Media cần thêm vào kho.
+     */
+    public void addMedia(Media media) {
+        if (media == null) {
+            System.out.println("Lỗi: Không thể thêm đối tượng null vào cửa hàng.");
+            return;
+        }
+        // Kiểm tra xem media đã tồn tại trong kho chưa
+        if (itemsInStore.contains(media)) { // Dựa vào Media.equals() (đã ghi đè theo ID)
+            System.out.println("Thông báo: Sản phẩm '" + media.getTitle() + "' (ID: " + media.getId() + ") đã có trong cửa hàng.");
+        } else {
+            itemsInStore.add(media);
+            System.out.println("Đã thêm '" + media.getTitle() + "' vào cửa hàng.");
+        }
+    }
+
+    /** Overload để thêm nhiều media cùng lúc **/
+    public void addMedia(Media... mediaList) {
+        if (mediaList == null) return;
+        for (Media media : mediaList) {
+            addMedia(media); // Gọi lại phương thức add đơn lẻ
+        }
+    }
+
+    // --- Phương thức removeMedia ---
+    /**
+     * Xóa một đối tượng Media khỏi kho của cửa hàng.
+     * Thông báo nếu đối tượng là null hoặc không tìm thấy.
+     * @param media Đối tượng Media cần xóa khỏi kho.
+     */
+    public void removeMedia(Media media) {
+        if (media == null) {
+            System.out.println("Lỗi: Không thể xóa đối tượng null khỏi cửa hàng.");
+            return;
+        }
+        // Thử xóa media khỏi danh sách
+        boolean removed = itemsInStore.remove(media); // Dựa vào Media.equals()
+
+        if (removed) {
+            System.out.println("Đã xóa '" + media.getTitle() + "' (ID: " + media.getId() + ") khỏi cửa hàng.");
+        } else {
+            System.out.println("Lỗi: Không tìm thấy sản phẩm '" + media.getTitle() + "' (ID: " + media.getId() + ") trong cửa hàng để xóa.");
+        }
+    }
+
+    // --- Phương thức hiển thị sản phẩm trong cửa hàng ---
+    /**
+     * In ra danh sách các sản phẩm hiện có trong cửa hàng.
+     */
+    public void printStore() {
+        System.out.println("***********************STORE***********************");
+        if (itemsInStore.isEmpty()) {
+            System.out.println("Cửa hàng hiện không có sản phẩm nào.");
+        } else {
+            System.out.println("Sản phẩm hiện có:");
+            // Có thể sắp xếp trước khi in nếu muốn
+            // Collections.sort(itemsInStore, Comparator.comparing(Media::getTitle)); // Sắp xếp theo tiêu đề
+
+            for (int i = 0; i < itemsInStore.size(); i++) {
+                Media media = itemsInStore.get(i);
+                // Sử dụng toString() của từng loại Media cụ thể
+                System.out.println((i + 1) + ". " + media.toString());
+            }
+        }
+        System.out.println("***************************************************");
+    }
+
+    // --- Các phương thức phụ trợ (tùy chọn) ---
+
+    /**
+     * Trả về số lượng sản phẩm hiện có trong cửa hàng.
+     * @return số lượng sản phẩm.
+     */
+    public int getItemsCount() {
+        return itemsInStore.size();
+    }
+
+     /**
+     * Tìm kiếm Media trong cửa hàng theo tiêu đề.
+     * @param title Tiêu đề cần tìm.
+     * @return Đối tượng Media tìm thấy đầu tiên, hoặc null nếu không tìm thấy.
+     */
+     public Media searchByTitle(String title) {
+        if (title == null || title.trim().isEmpty()) {
+            return null;
+        }
+        String searchLower = title.trim().toLowerCase();
+        for (Media media : itemsInStore) {
+            if (media != null && media.getTitle() != null && media.getTitle().toLowerCase().contains(searchLower)) {
+                return media; // Trả về đối tượng đầu tiên tìm thấy
+            }
+        }
+        return null; // Không tìm thấy
+    }
+
+     /**
+      * Tìm kiếm Media trong cửa hàng theo ID.
+      * @param id ID cần tìm.
+      * @return Đối tượng Media tìm thấy, hoặc null nếu không tìm thấy.
+      */
+     public Media searchById(int id) {
+         for (Media media : itemsInStore) {
+             if (media != null && media.getId() == id) {
+                 return media;
+             }
+         }
+         return null; // Không tìm thấy
+     }
+
+
+    // --- Các phương thức cũ bị xóa ---
+    // public void addDVD(...)
+    // public void removeDVD(...)
+    // public int getItemCount() // Thay bằng size() của ArrayList
+    // public DigitalVideoDisc[] getItemsInStore() // Thay bằng getter trả về List<Media> nếu cần
+    // (Getter trả về bản sao của List để bảo vệ)
+    public ArrayList<Media> getItemsInStore() {
+        return new ArrayList<>(itemsInStore); // Trả về bản sao
+    }
+
+}

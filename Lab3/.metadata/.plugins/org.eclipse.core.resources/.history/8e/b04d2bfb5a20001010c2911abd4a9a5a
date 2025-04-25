@@ -1,0 +1,74 @@
+package hust.soict.hedspi.aims.media;
+
+
+import java.util.Objects;
+
+// Lớp Track đại diện cho một bản nhạc trên CD
+// Nó cần implement Playable để có thể chạy được
+public class Track implements Playable {
+
+    private String title;
+    private int length; // Đơn vị tính: giây (giả sử)
+
+    // --- Constructor ---
+    public Track(String title, int length) {
+        this.title = title;
+        if (length >= 0) { // Đảm bảo length không âm
+           this.length = length;
+        } else {
+            this.length = 0;
+            System.out.println("Warning: Track length cannot be negative. Setting length for '" + title + "' to 0.");
+        }
+    }
+
+    // --- Getters ---
+    public String getTitle() {
+        return title;
+    }
+
+    public int getLength() {
+        return length;
+    }
+
+    // --- Ghi đè equals và hashCode ---
+    // Coi hai track là giống nhau nếu chúng có cùng title (không phân biệt hoa thường)
+    // và cùng length. Trong ngữ cảnh một CD, title thường là đủ để xác định duy nhất.
+    // Nếu chỉ dựa vào title:
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Track track = (Track) o;
+        // So sánh title không phân biệt hoa thường
+        return Objects.equals(title.toLowerCase(), track.title.toLowerCase());
+         // Nếu cần cả length:
+         // return length == track.length &&
+         //        Objects.equals(title.toLowerCase(), track.title.toLowerCase());
+    }
+
+    @Override
+    public int hashCode() {
+         // Hash code dựa trên title không phân biệt hoa thường
+        return Objects.hash(title.toLowerCase());
+         // Nếu cần cả length:
+         // return Objects.hash(title.toLowerCase(), length);
+    }
+
+
+    // --- toString() ---
+    @Override
+    public String toString() {
+        return "Track: " + title + " - Length: " + length + "s";
+    }
+
+    // --- Triển khai phương thức play() từ Playable ---
+    @Override
+    public void play() {
+        if (this.length > 0) {
+            System.out.println("Playing track: " + this.getTitle());
+            System.out.println("Track Length: " + this.getLength());
+        } else {
+             System.out.println("Cannot play track: " + this.getTitle() + " - Length is zero or less.");
+        }
+    }
+}

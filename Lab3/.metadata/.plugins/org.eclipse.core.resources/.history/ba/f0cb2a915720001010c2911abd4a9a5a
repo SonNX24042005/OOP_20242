@@ -1,0 +1,48 @@
+package hust.soict.hedspi.aims.media;
+
+//Lớp Disc đại diện cho các loại đĩa nói chung (DVD, CD)
+//Nó kế thừa các thuộc tính chung từ Media
+public class Disc extends Media {
+
+ // Thêm các thuộc tính chung cho các loại đĩa
+ private int length;
+ private String director;
+
+ // --- Constructors ---
+ // Constructor cơ bản (có thể không cần thiết nếu luôn tạo Disc với đủ thông tin)
+  public Disc() {
+      super();
+  }
+
+  // Constructor chỉ với title (kế thừa từ Media)
+  public Disc(String title) {
+      super(title);
+  }
+
+ // Constructor với các thông tin Media và thông tin riêng của Disc
+ public Disc(int id, String title, String category, float cost, int length, String director) {
+     super(id, title, category, cost); // Gọi constructor của Media
+     this.length = length;
+     this.director = director;
+ }
+
+ // Constructor không có ID (ID sẽ được tạo ở lớp con cụ thể như DVD)
+  public Disc(String title, String category, float cost, int length, String director) {
+      super(title, category, cost); // Gọi constructor phù hợp của Media
+      this.length = length;
+      this.director = director;
+  }
+
+
+ // --- Getters ---
+ public int getLength() {
+     return length;
+ }
+
+ public String getDirector() {
+     return director;
+ }
+
+ // Không cần ghi đè equals/hashCode nếu chỉ dựa vào ID từ Media
+ // Không cần ghi đè toString ở đây, lớp con sẽ cung cấp chi tiết hơn
+}

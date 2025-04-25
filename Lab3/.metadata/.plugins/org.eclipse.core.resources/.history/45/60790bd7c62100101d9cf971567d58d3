@@ -1,0 +1,63 @@
+package hust.soict.hedspi.garbage;
+
+
+import java.util.Random;
+
+public class ConcatenationInLoops {
+
+    public static void main(String[] args) {
+        Random r = new Random(123); // Sử dụng seed để có kết quả lặp lại (nếu cần so sánh chính xác)
+        long start;
+        int loopCount = 65536; // Số lần lặp như trong ví dụ
+        String s; // Biến lưu kết quả cuối cùng (không thực sự cần thiết cho việc đo thời gian)
+
+        // --- Test 1: Sử dụng toán tử + ---
+        start = System.currentTimeMillis();
+        String sPlus = ""; // Khởi tạo chuỗi rỗng
+        for (int i = 0; i < loopCount; i++) {
+            sPlus += r.nextInt(2); // Nối chuỗi bằng toán tử +
+                                   // Mỗi lần thực hiện sẽ tạo ra đối tượng String mới -> tốn kém
+        }
+        s = sPlus; // Gán kết quả cuối cùng (không ảnh hưởng nhiều đến thời gian đo)
+        System.out.printf("Using + operator:      %d ms%n", System.currentTimeMillis() - start);
+        // Kết quả dự kiến: Rất chậm (vài giây, tùy thuộc vào máy)
+
+        // --- Test 2: Sử dụng StringBuilder ---
+        // Reset Random để đảm bảo cùng chuỗi số ngẫu nhiên nếu cần so sánh nội dung
+        r = new Random(123);
+        start = System.currentTimeMillis();
+        StringBuilder sb = new StringBuilder(); // Khởi tạo StringBuilder
+        for (int i = 0; i < loopCount; i++) {
+            sb.append(r.nextInt(2)); // Nối chuỗi bằng append() - hiệu quả hơn
+        }
+        s = sb.toString(); // Chuyển đổi thành String một lần duy nhất cuối cùng
+        System.out.printf("Using StringBuilder:   %d ms%n", System.currentTimeMillis() - start);
+        // Kết quả dự kiến: Rất nhanh (vài mili giây)
+
+        // --- Test 3: Sử dụng StringBuffer ---
+        // Reset Random
+        r = new Random(123);
+        start = System.currentTimeMillis();
+        StringBuffer sbf = new StringBuffer(); // Khởi tạo StringBuffer
+        for (int i = 0; i < loopCount; i++) {
+            sbf.append(r.nextInt(2)); // Nối chuỗi bằng append() - hiệu quả, thread-safe
+        }
+        s = sbf.toString(); // Chuyển đổi thành String một lần duy nhất cuối cùng
+        System.out.printf("Using StringBuffer:    %d ms%n", System.currentTimeMillis() - start);
+        // Kết quả dự kiến: Rất nhanh (có thể chậm hơn StringBuilder một chút do synchronized)
+
+        /*
+         * Giải thích kết quả:
+         * - Toán tử +: Trong vòng lặp, mỗi lần `sPlus += ...` thực chất là tạo ra một đối tượng String mới
+         *   bằng cách sao chép nội dung cũ và nối thêm phần mới. Điều này cực kỳ tốn kém về bộ nhớ
+         *   (tạo ra nhiều "rác" - garbage) và thời gian xử lý.
+         * - StringBuilder: Nó sử dụng một mảng ký tự nội bộ có thể thay đổi kích thước. Phép `append()`
+         *   chỉ đơn giản là thêm ký tự vào mảng đó (hoặc cấp phát lại mảng lớn hơn nếu cần).
+         *   Nó không tạo đối tượng String mới mỗi lần lặp. Nó nhanh và hiệu quả cho các tác vụ nối chuỗi
+         *   trong môi trường đơn luồng (single-threaded).
+         * - StringBuffer: Tương tự StringBuilder nhưng các phương thức của nó (như append) là `synchronized`,
+         *   nghĩa là nó an toàn khi sử dụng trong môi trường đa luồng (thread-safe). Sự đồng bộ hóa này
+         *   làm nó chậm hơn một chút so với StringBuilder trong môi trường đơn luồng.
+         */
+    }
+}

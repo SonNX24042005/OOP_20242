@@ -1,0 +1,95 @@
+package hust.soict.hedspi.aims.media;
+
+
+import java.util.Objects; // Cần cho equals/hashCode
+
+// Khai báo lớp public abstract
+public abstract class Media {
+
+    // Các trường private chung
+    protected int id; // Nên là protected nếu muốn lớp con truy cập trực tiếp, hoặc private với getter/setter
+    protected String title;
+    protected String category;
+    protected float cost;
+
+    // --- Constructors ---
+    // Constructor mặc định
+    public Media() {
+    }
+
+    // Constructor để khởi tạo các thuộc tính chung
+    public Media(int id, String title, String category, float cost) {
+        this.id = id;
+        this.title = title;
+        this.category = category;
+        this.cost = cost;
+    }
+
+     // Constructor chỉ với title (có thể hữu ích)
+    public Media(String title) {
+        this.title = title;
+    }
+
+    // Constructor với title và cost
+    public Media(String title, float cost) {
+        this.title = title;
+        this.cost = cost;
+    }
+
+
+    // --- Getters and Setters ---
+    public int getId() {
+        return id;
+    }
+
+    // Setter cho ID thường không thay đổi sau khi tạo, nhưng để đây nếu cần
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public float getCost() {
+        return cost;
+    }
+
+    public void setCost(float cost) {
+        this.cost = cost;
+    }
+
+    // --- equals() và hashCode() ---
+    // Ghi đè dựa trên ID để đảm bảo tính nhất quán
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        // Chỉ kiểm tra ID, không kiểm tra class chính xác
+        // để đối tượng Media có cùng ID có thể được coi là bằng nhau
+        // Nếu muốn chỉ Media cùng loại mới bằng nhau, dùng:
+        // if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || !(o instanceof Media)) return false; // Kiểm tra nếu là một loại Media nào đó
+        Media media = (Media) o;
+        return id == media.id; // So sánh chỉ dựa trên ID
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id); // Hash code chỉ dựa trên ID
+    }
+
+    // Có thể thêm phương thức abstract nếu muốn các lớp con bắt buộc phải triển khai
+    // public abstract void play(); // Ví dụ
+}

@@ -1,0 +1,83 @@
+package hust.soict.hedspi.aims.media; // Đã cập nhật package
+
+// import java.util.Objects; // Không cần nữa nếu equals/hashCode ở lớp cha
+
+public class DigitalVideoDisc extends Media { // Kế thừa Media
+
+    // Các trường riêng của DVD
+    private String director;
+    private int length;
+
+    // Trường static để tạo ID tự động
+    private static int nbDigitalVideoDiscs = 0;
+
+    // --- Constructors đã cập nhật ---
+
+    // Constructor chỉ với title
+    public DigitalVideoDisc(String title) {
+        super(++nbDigitalVideoDiscs, title, null, 0.0f); // Gọi super() với ID và title
+        // Các giá trị khác có thể là null/0 hoặc giá trị mặc định
+    }
+
+    // Constructor đầy đủ
+    public DigitalVideoDisc(String title, String category, String director, int length, float cost) {
+        super(++nbDigitalVideoDiscs, title, category, cost); // Gọi super() với các trường chung
+        this.director = director; // Khởi tạo trường riêng
+        this.length = length;     // Khởi tạo trường riêng
+    }
+
+    // Constructor không có length
+    public DigitalVideoDisc(String title, String category, String director, float cost) {
+       super(++nbDigitalVideoDiscs, title, category, cost); // Gọi super()
+       this.director = director;
+       // this.length sẽ mặc định là 0
+    }
+
+     // Constructor không có director và length
+    public DigitalVideoDisc(String title, String category, float cost) {
+        super(++nbDigitalVideoDiscs, title, category, cost); // Gọi super()
+        // this.director sẽ là null, this.length sẽ là 0
+    }
+
+
+    // --- Getters and Setters cho các trường riêng ---
+    public String getDirector() {
+        return director;
+    }
+
+    public void setDirector(String director) {
+        this.director = director;
+    }
+
+    public int getLength() {
+        return length;
+    }
+
+    public void setLength(int length) {
+        this.length = length;
+    }
+
+    // --- Xóa các getter/setter của id, title, category, cost ---
+
+    // --- Xóa equals() và hashCode() (kế thừa từ Media) ---
+
+    // --- Cập nhật toString() để sử dụng getter từ lớp cha ---
+    @Override
+    public String toString() {
+        // Sử dụng getTitle(), getCategory(), getCost() từ lớp Media
+        return String.format("DVD - %s - %s - %s - %d: %.2f $",
+                getTitle(),
+                (getCategory() != null ? getCategory() : "N/A"), // Kiểm tra null cho category
+                (director != null ? director : "N/A"), // Kiểm tra null cho director
+                length,
+                getCost());
+    }
+
+    // --- Cập nhật isMatch để dùng getTitle() ---
+     public boolean isMatch(String titleToMatch) {
+        if (titleToMatch == null || this.getTitle() == null) { // Dùng getTitle()
+            return false;
+        }
+        return this.getTitle().toLowerCase().contains(titleToMatch.toLowerCase());
+    }
+}

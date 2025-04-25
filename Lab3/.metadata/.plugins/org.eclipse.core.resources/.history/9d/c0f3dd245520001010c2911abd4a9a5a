@@ -1,0 +1,165 @@
+package hust.soict.hedspi.aims.media;
+
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects; // Import để sử dụng trong equals/hashCode
+
+public class Book { // Lớp public, kế thừa từ Object (mặc định)
+
+    // Các trường private theo yêu cầu
+    private int id;
+    private String title;
+    private String category;
+    private float cost;
+    // Khởi tạo ngay ArrayList để tránh NullPointerException
+    private List<String> authors = new ArrayList<>();
+
+    // --- Constructors ---
+
+    // Constructor mặc định (như trong hình)
+    public Book() {
+        // Có thể để trống hoặc thêm logic khởi tạo mặc định nếu cần
+    }
+
+    // Constructor hữu ích để tạo sách với thông tin cơ bản
+    public Book(int id, String title, String category, float cost) {
+        this.id = id;
+        this.title = title;
+        this.category = category;
+        this.cost = cost;
+    }
+
+    // Constructor đầy đủ (bao gồm cả danh sách tác giả ban đầu)
+    public Book(int id, String title, String category, float cost, List<String> authors) {
+        this.id = id;
+        this.title = title;
+        this.category = category;
+        this.cost = cost;
+        // Tạo một bản sao của danh sách được truyền vào để tránh thay đổi từ bên ngoài
+        if (authors != null) {
+            this.authors = new ArrayList<>(authors);
+        }
+        // Nếu authors là null, danh sách authors sẽ là rỗng (đã khởi tạo ở trên)
+    }
+
+
+    // --- Getters and Setters (Trừ authors theo yêu cầu) ---
+
+    public int getId() {
+        return id;
+    }
+
+    // Setter cho ID thường không cần thiết nếu ID là duy nhất và không đổi sau khi tạo
+    // public void setId(int id) {
+    //     this.id = id;
+    // }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public float getCost() {
+        return cost;
+    }
+
+    public void setCost(float cost) {
+        this.cost = cost;
+    }
+
+    // Getter cho authors (trả về bản sao để bảo vệ danh sách gốc)
+    public List<String> getAuthors() {
+        return new ArrayList<>(authors); // Trả về bản sao
+    }
+
+
+    // --- Phương thức quản lý tác giả ---
+
+    /**
+     * Thêm một tác giả vào danh sách nếu tác giả đó chưa tồn tại.
+     *
+     * @param authorName Tên tác giả cần thêm.
+     */
+    public void addAuthor(String authorName) {
+        if (authorName == null || authorName.trim().isEmpty()) {
+             System.out.println("Lỗi: Tên tác giả không được để trống.");
+             return;
+        }
+        // Kiểm tra xem tác giả đã tồn tại trong danh sách chưa (không phân biệt hoa thường)
+        boolean found = false;
+        for (String existingAuthor : authors) {
+            if (existingAuthor.equalsIgnoreCase(authorName.trim())) {
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            authors.add(authorName.trim()); // Thêm nếu chưa có
+            System.out.println("Đã thêm tác giả: " + authorName.trim());
+        } else {
+            System.out.println("Thông báo: Tác giả '" + authorName.trim() + "' đã tồn tại.");
+        }
+    }
+
+    /**
+     * Xóa một tác giả khỏi danh sách nếu tác giả đó tồn tại.
+     *
+     * @param authorName Tên tác giả cần xóa.
+     */
+    public void removeAuthor(String authorName) {
+         if (authorName == null || authorName.trim().isEmpty()) {
+             System.out.println("Lỗi: Tên tác giả cần xóa không được để trống.");
+             return;
+        }
+
+        // Sử dụng removeIf để xóa phần tử khớp (không phân biệt hoa thường)
+        boolean removed = authors.removeIf(existingAuthor -> existingAuthor.equalsIgnoreCase(authorName.trim()));
+
+        if (removed) {
+            System.out.println("Đã xóa tác giả: " + authorName.trim());
+        } else {
+            System.out.println("Lỗi: Không tìm thấy tác giả '" + authorName.trim() + "' để xóa.");
+        }
+    }
+
+    // --- Ghi đè equals và hashCode (Dựa trên ID để đơn giản) ---
+    // Quan trọng cho việc so sánh và quản lý trong các Collection sau này
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Book book = (Book) o;
+        return id == book.id; // Coi hai sách là giống nhau nếu cùng ID
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id); // Hash code dựa trên ID
+    }
+
+    // --- Ghi đè toString (Để hiển thị thông tin cơ bản) ---
+    @Override
+    public String toString() {
+        return "Book{" +
+               "id=" + id +
+               ", title='" + title + '\'' +
+               ", category='" + category + '\'' +
+               ", cost=" + cost +
+               ", authors=" + authors +
+               '}';
+    }
+}

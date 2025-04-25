@@ -1,0 +1,63 @@
+package hust.soict.hedspi.aims.media; // Đã cập nhật package
+
+
+public class DigitalVideoDisc extends Disc implements Playable { // Kế thừa Disc
+
+    private static int nbDigitalVideoDiscs = 0; // Giữ lại bộ đếm ID
+
+    // --- Constructors đã cập nhật để gọi super() của Disc ---
+
+    public DigitalVideoDisc(String title) {
+        // Gọi super của Disc, cần cung cấp length và director mặc định (hoặc null)
+        super(++nbDigitalVideoDiscs, title, null, 0.0f, 0, null);
+    }
+
+    public DigitalVideoDisc(String title, String category, String director, int length, float cost) {
+        // Gọi super của Disc, truyền đầy đủ thông tin
+        super(++nbDigitalVideoDiscs, title, category, cost, length, director);
+    }
+
+    public DigitalVideoDisc(String title, String category, String director, float cost) {
+        // Gọi super của Disc, length mặc định là 0
+        super(++nbDigitalVideoDiscs, title, category, cost, 0, director);
+    }
+
+    public DigitalVideoDisc(String title, String category, float cost) {
+         // Gọi super của Disc, length=0, director=null
+        super(++nbDigitalVideoDiscs, title, category, cost, 0, null);
+    }
+
+    // --- Xóa các trường length, director và các getter/setter của chúng ---
+
+    // --- toString() sử dụng getter từ lớp Disc ---
+    @Override
+    public String toString() {
+        // Sử dụng getTitle(), getCategory(), getCost() từ Media
+        // Sử dụng getLength(), getDirector() từ Disc
+        return String.format("DVD [%d] - %s - %s - %s - %d: %.2f $",
+                getId(), // Lấy ID từ Media
+                getTitle(),
+                (getCategory() != null ? getCategory() : "N/A"),
+                (getDirector() != null ? getDirector() : "N/A"), // Lấy Director từ Disc
+                getLength(), // Lấy Length từ Disc
+                getCost());
+    }
+
+    // --- isMatch() sử dụng getTitle() từ lớp Media ---
+     public boolean isMatch(String titleToMatch) {
+        if (titleToMatch == null || this.getTitle() == null) {
+            return false;
+        }
+        return this.getTitle().toLowerCase().contains(titleToMatch.toLowerCase());
+    }
+
+     // --- Thêm phương thức play() nếu cần (theo yêu cầu 7) ---
+     public void play() {
+         if (this.getLength() > 0) {
+             System.out.println("Playing DVD: " + this.getTitle());
+             System.out.println("DVD Length: " + this.getLength());
+         } else {
+             System.out.println("Cannot play DVD: " + this.getTitle() + " - Length is zero or less.");
+         }
+     }
+}

@@ -1,0 +1,50 @@
+package hust.soict.hedspi.garbage;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+public class GarbageCreator {
+
+    public static void main(String[] args) {
+        // Thay đổi tên file này thành file lớn bạn đã chuẩn bị
+        String filename = "D:\\Data\\data_learn\\ki20242\\LapTrinhHuongDoiTuong\\Lab\\OOP_20242\\Lab3\\OtherProjects\\src\\large_text_file.txt"; // HOẶC ví dụ: "C:/path/to/your/large_file.log"
+        byte[] inputBytes = { 0 };
+        long startTime, endTime;
+
+        try {
+            inputBytes = Files.readAllBytes(Paths.get(filename));
+            System.out.println("Read file successfully. Size: " + inputBytes.length + " bytes.");
+
+            // --- Bắt đầu đo thời gian nối chuỗi bằng toán tử + ---
+            startTime = System.currentTimeMillis();
+            String outputString = ""; // Khởi tạo chuỗi rỗng
+            for (byte b : inputBytes) {
+                // Đây là phần tạo ra rất nhiều "rác" (garbage)
+                // Mỗi lần += sẽ tạo một đối tượng String mới
+                outputString += (char)b;
+            }
+            endTime = System.currentTimeMillis();
+            // --- Kết thúc đo thời gian ---
+
+            System.out.println("GarbageCreator (using +):");
+            System.out.printf("Time taken: %d ms%n", (endTime - startTime));
+            // System.out.println("Final string length (approx): " + outputString.length()); // Bỏ comment nếu muốn xem độ dài
+
+            /*
+             * Lưu ý: Với file rất lớn, chương trình này có thể chạy rất chậm
+             * hoặc thậm chí bị treo/lỗi OutOfMemoryError do tạo quá nhiều đối tượng String tạm thời.
+             * Đây chính là vấn đề của việc tạo "rác" không cần thiết.
+             */
+
+        } catch (IOException e) {
+            System.err.println("Error reading file: " + filename);
+            System.err.println("Please ensure the file exists and the path is correct.");
+            e.printStackTrace();
+        } catch (OutOfMemoryError e) {
+             System.err.println("OutOfMemoryError! The file might be too large for this inefficient method.");
+             System.err.println("This demonstrates the problem of excessive garbage creation.");
+             e.printStackTrace();
+        }
+    }
+}
