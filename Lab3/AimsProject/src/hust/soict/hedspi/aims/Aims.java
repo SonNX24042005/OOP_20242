@@ -1,0 +1,372 @@
+package hust.soict.hedspi.aims;
+
+import hust.soict.hedspi.aims.cart.Cart;
+import hust.soict.hedspi.aims.media.*;
+import hust.soict.hedspi.aims.store.Store;
+
+import java.util.ArrayList;
+import java.util.InputMismatchException;
+import java.util.List;
+import java.util.Scanner;
+
+public class Aims {
+
+    private static Store store = new Store();
+    private static Cart cart = new Cart();
+    private static Scanner scanner = new Scanner(System.in);
+
+    public static void main(String[] args) {
+        // --- Khởi tạo dữ liệu mẫu cho Store ---
+        initializeStore();
+
+        int choice;
+        do {
+            showMenu();
+            choice = getUserChoiceInt();
+
+            switch (choice) {
+                case 1:
+                    viewStore();
+                    break;
+                case 2:
+                    updateStore();
+                    break;
+                case 3:
+                    viewCart();
+                    break;
+                case 0:
+                    System.out.println("Exiting AIMS. Goodbye!");
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please choose again.");
+            }
+        } while (choice != 0);
+
+        scanner.close();
+    }
+
+    // --- Khởi tạo dữ liệu mẫu ---
+    public static void initializeStore() {
+        Book book1 = new Book(1, "The Lord of the Rings", "Fantasy", 25.50f, List.of("J.R.R. Tolkien"));
+        Book book2 = new Book(2, "Pride and Prejudice", "Romance", 15.00f, List.of("Jane Austen"));
+
+        DigitalVideoDisc dvd1 = new DigitalVideoDisc("The Matrix", "Science Fiction", "Wachowskis", 136, 22.50f);
+        DigitalVideoDisc dvd2 = new DigitalVideoDisc("Inception", "Science Fiction", "Christopher Nolan", 148, 25.00f);
+        DigitalVideoDisc dvd3 = new DigitalVideoDisc("Interstellar", "Science Fiction", "Christopher Nolan", 169, 28.99f);
+
+        CompactDisc cd1 = new CompactDisc(10, "Dark Side of the Moon", "Rock", 18.80f, null, "Pink Floyd");
+        cd1.addTrack(new Track("Speak to Me/Breathe", 238));
+        cd1.addTrack(new Track("Time", 413));
+        cd1.addTrack(new Track("Money", 382));
+
+        CompactDisc cd2 = new CompactDisc(11, "Abbey Road", "Rock", 20.50f, null, "The Beatles");
+        cd2.addTrack(new Track("Come Together", 260));
+        cd2.addTrack(new Track("Something", 183));
+        cd2.addTrack(new Track("Here Comes the Sun", 185));
+
+        store.addMedia(book1, book2, dvd1, dvd2, dvd3, cd1, cd2);
+        System.out.println("Store initialized with sample media.");
+    }
+
+
+    // --- Các phương thức hiển thị Menu ---
+    public static void showMenu() {
+        System.out.println("\nAIMS: ");
+        System.out.println("--------------------------------");
+        System.out.println("1. View store");
+        System.out.println("2. Update store");
+        System.out.println("3. See current cart");
+        System.out.println("0. Exit");
+        System.out.println("--------------------------------");
+        System.out.print("Please choose a number: 0-1-2-3: ");
+    }
+
+    public static void storeMenu() {
+        System.out.println("\nOptions: ");
+        System.out.println("--------------------------------");
+        System.out.println("1. See a media's details");
+        System.out.println("2. Add a media to cart");
+        System.out.println("3. Play a media");
+        System.out.println("4. See current cart");
+        System.out.println("0. Back");
+        System.out.println("--------------------------------");
+        System.out.print("Please choose a number: 0-1-2-3-4: ");
+    }
+
+    public static void mediaDetailsMenu() {
+        System.out.println("\nOptions: ");
+        System.out.println("--------------------------------");
+        System.out.println("1. Add to cart");
+        System.out.println("2. Play");
+        System.out.println("0. Back");
+        System.out.println("--------------------------------");
+        System.out.print("Please choose a number: 0-1-2: ");
+    }
+
+    public static void cartMenu() {
+        System.out.println("\nOptions: ");
+        System.out.println("--------------------------------");
+        System.out.println("1. Filter media in cart");
+        System.out.println("2. Sort media in cart");
+        System.out.println("3. Remove media from cart");
+        System.out.println("4. Play a media");
+        System.out.println("5. Place order");
+        System.out.println("0. Back");
+        System.out.println("--------------------------------");
+        System.out.print("Please choose a number: 0-1-2-3-4-5: ");
+    }
+
+
+    // --- Các phương thức xử lý chức năng ---
+
+    public static void viewStore() {
+        System.out.println("\n--- Viewing Store ---");
+        store.printStore();
+
+        int choice;
+        do {
+            storeMenu();
+            choice = getUserChoiceInt();
+            Media foundMedia = null;
+
+            switch (choice) {
+                case 1: // See details
+                    System.out.print("Enter the title of the media to see details: ");
+                    String titleDetails = getUserChoiceString();
+                    foundMedia = store.searchByTitle(titleDetails);
+                    if (foundMedia != null) {
+                        System.out.println("\n--- Media Details ---");
+                        System.out.println(foundMedia.toString());
+                        if (foundMedia instanceof CompactDisc) {
+                             CompactDisc cd = (CompactDisc) foundMedia;
+                             System.out.println("--- Tracks ---");
+                             System.out.println("(Track details would be shown here if implemented in CD.toString or getTracks)");
+                        }
+                        mediaDetails(foundMedia);
+                    } else {
+                        System.out.println("Media with title '" + titleDetails + "' not found in store.");
+                    }
+                    break;
+                case 2: // Add to cart
+                    System.out.print("Enter the title of the media to add to cart: ");
+                    String titleAdd = getUserChoiceString();
+                    foundMedia = store.searchByTitle(titleAdd);
+                    if (foundMedia != null) {
+                        cart.addMedia(foundMedia);
+                        System.out.println("Current number of items in cart: " + cart.getItemsCount());
+                    } else {
+                        System.out.println("Media with title '" + titleAdd + "' not found in store.");
+                    }
+                    break;
+                case 3: // Play
+                    System.out.print("Enter the title of the media to play: ");
+                    String titlePlay = getUserChoiceString();
+                    foundMedia = store.searchByTitle(titlePlay);
+                    if (foundMedia != null) {
+                        if (foundMedia instanceof Playable) {
+                            ((Playable) foundMedia).play();
+                        } else {
+                            System.out.println("This media ('" + foundMedia.getTitle() + "') cannot be played.");
+                        }
+                    } else {
+                        System.out.println("Media with title '" + titlePlay + "' not found in store.");
+                    }
+                    break;
+                case 4: // See current cart
+                    viewCart();
+                    break;
+                case 0: // Back
+                    System.out.println("Returning to main menu...");
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please choose again.");
+            }
+        } while (choice != 0);
+    }
+
+
+    public static void mediaDetails(Media media) {
+        int choice;
+        do {
+            mediaDetailsMenu();
+            choice = getUserChoiceInt();
+
+            switch (choice) {
+                case 1: // Add to cart
+                    cart.addMedia(media);
+                    System.out.println("Current number of items in cart: " + cart.getItemsCount());
+                    break;
+                case 2: // Play
+                    if (media instanceof Playable) {
+                        ((Playable) media).play();
+                    } else {
+                        System.out.println("This media ('" + media.getTitle() + "') cannot be played.");
+                    }
+                    break;
+                case 0: // Back
+                    System.out.println("Returning to store menu...");
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please choose again.");
+            }
+        } while (choice != 0);
+    }
+
+
+    public static void updateStore() {
+        System.out.println("\n--- Update Store ---");
+        System.out.println("1. Add Media");
+        System.out.println("2. Remove Media");
+        System.out.println("0. Back");
+        System.out.print("Choose option: ");
+        int choice = getUserChoiceInt();
+
+        switch (choice) {
+            case 1: // Add Media
+                System.out.print("Enter title for new media: ");
+                String title = getUserChoiceString();
+                DigitalVideoDisc newDvd = new DigitalVideoDisc(title);
+                newDvd.setCategory("Unknown");
+                newDvd.setCost(9.99f);
+                store.addMedia(newDvd);
+                System.out.println("Simple DVD added. Enhance this feature for more details!");
+                break;
+            case 2: // Remove Media
+                System.out.print("Enter the title of the media to remove: ");
+                String titleRemove = getUserChoiceString();
+                Media mediaToRemove = store.searchByTitle(titleRemove);
+                if (mediaToRemove != null) {
+                    store.removeMedia(mediaToRemove);
+                } else {
+                    System.out.println("Media with title '" + titleRemove + "' not found in store.");
+                }
+                break;
+            case 0: // Back
+                System.out.println("Returning to main menu...");
+                break;
+            default:
+                System.out.println("Invalid choice.");
+        }
+    }
+
+
+    public static void viewCart() {
+        System.out.println("\n--- Viewing Current Cart ---");
+        cart.printCart();
+
+        int choice;
+        do {
+            cartMenu();
+            choice = getUserChoiceInt();
+            Media foundMedia = null;
+
+            switch (choice) {
+                case 1: // Filter
+                    System.out.println("Filter by: 1. ID / 2. Title");
+                    System.out.print("Choose filter type: ");
+                    int filterType = getUserChoiceInt();
+                    if (filterType == 1) {
+                        System.out.print("Enter ID to filter: ");
+                        int idFilter = getUserChoiceInt();
+                        cart.searchById(idFilter);
+                    } else if (filterType == 2) {
+                        System.out.print("Enter title to filter: ");
+                        String titleFilter = getUserChoiceString();
+                        cart.searchByTitle(titleFilter);
+                    } else {
+                        System.out.println("Invalid filter type.");
+                    }
+                    break;
+                case 2: // Sort
+                    System.out.println("Sort by: 1. Title/Cost / 2. Cost/Title");
+                    System.out.print("Choose sort type: ");
+                    int sortType = getUserChoiceInt();
+                    if (sortType == 1) {
+                        cart.printSortedByTitleCost();
+                    } else if (sortType == 2) {
+                        cart.printSortedByCostTitle();
+                    } else {
+                        System.out.println("Invalid sort type.");
+                    }
+                    break;
+                case 3: // Remove
+                    System.out.print("Enter the title of the media to remove from cart: ");
+                    String titleRemove = getUserChoiceString();
+                    Media mediaToRemove = null;
+                    ArrayList<Media> currentItems = cart.getItemsOrdered();
+                    for(Media item : currentItems) {
+                        if(item.getTitle().equalsIgnoreCase(titleRemove)) {
+                            mediaToRemove = item;
+                            break;
+                        }
+                    }
+
+                    if (mediaToRemove != null) {
+                        cart.removeMedia(mediaToRemove);
+                    } else {
+                        System.out.println("Media with title '" + titleRemove + "' not found in cart.");
+                    }
+                    break;
+                case 4: // Play
+                     System.out.print("Enter the title of the media to play from cart: ");
+                     String titlePlay = getUserChoiceString();
+                     Media mediaToPlay = null;
+                     ArrayList<Media> cartItemsPlay = cart.getItemsOrdered();
+                     for(Media item : cartItemsPlay) {
+                         if(item.getTitle().equalsIgnoreCase(titlePlay)) {
+                             mediaToPlay = item;
+                             break;
+                         }
+                     }
+
+                     if (mediaToPlay != null) {
+                         if (mediaToPlay instanceof Playable) {
+                             ((Playable) mediaToPlay).play();
+                         } else {
+                             System.out.println("This media ('" + mediaToPlay.getTitle() + "') cannot be played.");
+                         }
+                     } else {
+                         System.out.println("Media with title '" + titlePlay + "' not found in cart.");
+                     }
+                    break;
+                case 5: // Place order
+                    System.out.println("Order placed successfully!");
+                    cart.emptyCart();
+                    System.out.println("Cart is now empty.");
+                    return;
+                case 0: // Back
+                    System.out.println("Returning to main menu...");
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please choose again.");
+            }
+        } while (choice != 0);
+    }
+
+    // --- Phương thức tiện ích đọc input ---
+    private static int getUserChoiceInt() {
+        int choice = -1;
+        while (choice == -1) {
+            try {
+                choice = scanner.nextInt();
+                scanner.nextLine();
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input. Please enter a number.");
+                scanner.nextLine();
+                System.out.print("Please choose again: ");
+                choice = -1;
+            }
+        }
+        return choice;
+    }
+
+    private static String getUserChoiceString() {
+        return scanner.nextLine();
+    }
+
+    /*
+    public ArrayList<Media> getItemsOrdered() {
+        return new ArrayList<>(itemsOrdered);
+    }
+    */
+}

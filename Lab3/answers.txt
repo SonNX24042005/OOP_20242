@@ -1,0 +1,20 @@
+Reading Assignment:
+- What are the advantages of Polymorphism? 
+Tính đa hình làm cho mã nguồn trở nên linh hoạt và dễ mở rộng. Nó cho phép viết các đoạn mã tổng quát hoạt động với nhiều kiểu đối tượng khác nhau mà không cần nhiều câu lệnh kiểm tra kiểu phức tạp. 
+Điều này giúp tái sử dụng code hiệu quả, đơn giản hóa thiết kế và dễ dàng bổ sung các chức năng mới mà ít ảnh hưởng đến code hiện có.
+- How is Inheritance useful to achieve Polymorphism in Java? 
+Tính kế thừa là nền tảng cho tính đa hình động trong Java. Nó thiết lập mối quan hệ phân cấp "is-a" giữa các lớp, cho phép một tham chiếu lớp cha trỏ đến đối tượng lớp con.
+Quan trọng hơn, kế thừa cho phép các lớp con ghi đè các phương thức của lớp cha. Vì thời điểm chạy, Java có thể tự động xác định và gọi đúng phiên bản phương thức của đối tượng thực tế, ngay cả khi đang sử dụng tham chiếu của lớp cha .
+- What are the differences between Polymorphism and Inheritance in Java?
+Kế thừa và Đa hình là hai khái niệm khác nhau nhưng liên quan mật thiết. Kế thừa tập trung vào việc xây dựng mối quan hệ cấu trúc "is-a" giữa các lớp và cho phép chia sẻ, tái sử dụng mã nguồn. 
+Ngược lại, Đa hình tập trung vào hành vi "nhiều hình dạng", mô tả khả năng của các đối tượng thuộc các lớp khác nhau phản ứng theo cách riêng biệt đối với cùng một lời gọi phương thức.
+Nói cách khác, kế thừa cung cấp cấu trúc, còn đa hình tận dụng cấu trúc đó để mang lại sự linh hoạt trong hành vi tại thời điểm chạy.
+Question:
+-Để sắp xếp danh sách các sản phẩm trong giỏ hàng, lớp Media nên là lớp triển khai  interface Comparable<Media>. Điều này là do chúng ta cần một cách để so sánh bất kỳ hai đối tượng Media nào với nhau, bất kể chúng là Book, DVD hay CD.
+-Trong lớp Media, phương thức compareTo cần được ghi đè. Để phản ánh một thứ tự sắp xếp mong muốn, ví dụ như sắp xếp theo tiêu đề rồi đến chi phí , phương thức này sẽ trước tiên so sánh this.getTitle() với other.getTitle(). 
+Nếu tiêu đề khác nhau, nó trả về kết quả so sánh tiêu đề. Nếu tiêu đề giống nhau, nó sẽ tiếp tục so sánh this.getCost() với other.getCost() (theo thứ tự ngược lại để chi phí giảm dần) và trả về kết quả đó.
+-Một hạn chế lớn của cách tiếp cận Comparable là không thể có hai quy tắc sắp xếp tự nhiên khác nhau (ví dụ: vừa theo "tiêu đề rồi đến chi phí" VÀ "chi phí rồi đến tiêu đề") được định nghĩa trong cùng một lớp. 
+Comparable chỉ cho phép định nghĩa một thứ tự so sánh mặc định. Nếu muốn có nhiều cách sắp xếp, bắt buộc phải sử dụng Comparator.
+-Giả sử DVD có một quy tắc sắp xếp hoàn toàn khác (ví dụ: theo tiêu đề, rồi độ dài giảm dần, rồi đến chi phí), việc sửa đổi code khi dùng Comparable trở nên phức tạp và không được khuyến khích. 
+Việc đưa logic kiểm tra kiểu vào trong phương thức compareTo của lớp Media để áp dụng quy tắc riêng cho DVD sẽ phá vỡ tính đa hình và làm code trở nên khó bảo trì. 
+Vì vậy nên sử dụng các lớp Comparator riêng biệt sẽ là giải pháp thiết kế tốt hơn nhiều, cho phép định nghĩa các quy tắc sắp xếp cụ thể cho từng loại hoặc cho các mục đích khác nhau mà không làm phức tạp định nghĩa "tự nhiên" của lớp Media.
