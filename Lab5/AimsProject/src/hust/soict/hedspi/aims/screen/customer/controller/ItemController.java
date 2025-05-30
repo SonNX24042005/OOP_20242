@@ -1,17 +1,13 @@
 package hust.soict.hedspi.aims.screen.customer.controller;
-
 import hust.soict.hedspi.aims.cart.Cart;
-import hust.soict.hedspi.aims.exception.LimitExceededException;
-import hust.soict.hedspi.aims.exception.PlayerException;
 import hust.soict.hedspi.aims.media.Media;
 import hust.soict.hedspi.aims.media.Playable;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.HBox; // Static methods from HBox can be used directly
 
 public class ItemController {
 
@@ -19,67 +15,64 @@ public class ItemController {
     private Cart cart;
 
     @FXML
-    private Button btnAddToCart; [cite: 120]
+    private Label lblTitle;
 
     @FXML
-    private Button btnPlay; [cite: 120]
+    private Label lblCost;
 
     @FXML
-    private Label lblCost; [cite: 119]
+    private Button btnAddToCart;
 
     @FXML
-    private Label lblTitle; [cite: 119]
+    private Button btnPlay;
 
-    public ItemController(Cart cart) {
-        this.cart = cart;
-    }
+    @FXML
+    private HBox buttonsBox; // fx:id added to HBox in Item.fxml for this
+    
 
 
-    public void setData(Media media) { [cite: 124]
+
+    public void setData(Media media, Cart cart) {
         this.media = media;
-        lblTitle.setText(media.getTitle()); [cite: 124]
-        lblCost.setText(String.format("%.2f $", media.getCost())); [cite: 124]
+        this.cart = cart; // Gán tham số cart cho thuộc tính this.cart
 
-        if (media instanceof Playable) { [cite: 124]
-            btnPlay.setVisible(true); [cite: 124]
-            HBox.setMargin(btnAddToCart, new Insets(0, 0, 0, 30)); 
+        lblTitle.setText(media.getTitle());
+        lblCost.setText(media.getCost() + " $");
+        if (media instanceof Playable) {
+            btnPlay.setVisible(true);
         } else {
-            btnPlay.setVisible(false); [cite: 124]
-            HBox.setMargin(btnAddToCart, new Insets(0, 0, 0, 60)); [cite: 124]
+            btnPlay.setVisible(false);
+            // Xử lý layout nếu cần khi nút Play ẩn
         }
     }
 
     @FXML
     void btnAddToCartClicked(ActionEvent event) {
-        try {
-            cart.addMedia(media);
-            showAlert(Alert.AlertType.INFORMATION, "Success", "Media '" + media.getTitle() + "' added to cart.");
-        } catch (LimitExceededException e) {
-            showAlert(Alert.AlertType.ERROR, "Cart Full", e.getMessage());
-        } catch (Exception e) {
-            showAlert(Alert.AlertType.ERROR, "Error", "An unexpected error occurred: " + e.getMessage());
+        if (this.cart != null && this.media != null) {
+            this.cart.addMedia(media);
+            // Hiển thị thông báo hoặc cập nhật UI nếu cần
+            System.out.println("Added to cart: " + media.getTitle() + ". Items in cart: " + this.cart.getItemsCount());
+             javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
+            alert.setTitle("Item Added");
+            alert.setHeaderText(null);
+            alert.setContentText(media.getTitle() + " has been added to your cart.");
+            alert.showAndWait();
+        } else {
+            System.err.println("Cart or Media is null in ItemController. Cannot add to cart.");
         }
     }
 
     @FXML
     void btnPlayClicked(ActionEvent event) {
         if (media instanceof Playable) {
-            try {
-                ((Playable) media).play();
-                 showAlert(Alert.AlertType.INFORMATION, "Playing",
-                        "Playing: " + media.getTitle() + "\nLength: " + ((Playable) media).getLength() + "s");
-
-            } catch (PlayerException e) {
-                 showAlert(Alert.AlertType.ERROR, "Playback Error", e.getMessage()); [cite: 231, 232]
-            }
+            System.out.println("Playing: " + media.getTitle());
+            ((Playable) media).play();
+            // Optionally show a dialog or some visual feedback in the GUI
+            javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
+            alert.setTitle("Playing Media");
+            alert.setHeaderText(null);
+            alert.setContentText("Playing: " + media.getTitle());
+            alert.showAndWait();
         }
-    }
-
-    private void showAlert(Alert.AlertType alertType, String title, String content) {
-        Alert alert = new Alert(alertType);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
     }
 }

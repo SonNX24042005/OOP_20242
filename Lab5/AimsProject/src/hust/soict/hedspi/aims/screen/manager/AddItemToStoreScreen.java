@@ -31,5 +31,6 @@ public abstract class AddItemToStoreScreen extends JFrame {
         return north;
     }
 
+    // Mỗi lớp con sẽ tự định nghĩa form
     protected abstract JPanel createForm();
 }

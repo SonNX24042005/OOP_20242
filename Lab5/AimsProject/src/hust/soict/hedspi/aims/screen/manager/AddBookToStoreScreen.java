@@ -21,7 +21,7 @@ public class AddBookToStoreScreen extends AddItemToStoreScreen {
         JTextField tfTitle = new JTextField();
         JTextField tfCategory = new JTextField();
         JTextField tfCost = new JTextField();
-        JTextField tfAuthors = new JTextField();
+        JTextField tfAuthors = new JTextField(); // cách nhau bởi dấu phẩy
 
         panel.add(new JLabel("Title:"));
         panel.add(tfTitle);
